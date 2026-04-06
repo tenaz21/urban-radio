@@ -6,135 +6,239 @@
 
 <title>Urban Radio PRO</title>
 
-<!-- FUENTE PRO -->
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 
 <style>
 body {
   margin: 0;
-  background: radial-gradient(circle, #121212, #000);
-  font-family: 'Orbitron', sans-serif;
+  font-family: 'Poppins', sans-serif;
+  background: #0d0d0d;
   color: white;
 }
 
-/* HEADER PRO */
-header {
-  text-align: center;
-  font-size: 26px;
-  margin: 15px;
+/* HEADER */
+.header {
+  padding: 20px;
+}
+
+.title {
+  font-size: 30px;
+  font-weight: bold;
   color: #1db954;
-  text-shadow: 0 0 10px #1db954;
+}
+
+.section {
+  padding: 10px 20px;
+  font-weight: bold;
+  color: #aaa;
 }
 
 /* GRID */
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  padding: 12px;
+  gap: 15px;
+  padding: 15px;
 }
 
-/* CARDS PRO */
+/* CARDS */
 .card {
-  background: linear-gradient(145deg, #1a1a1a, #111);
+  background: #181818;
   border-radius: 20px;
-  padding: 20px;
+  padding: 15px;
   text-align: center;
   transition: 0.3s;
-  box-shadow: 0 0 15px rgba(0,0,0,0.6);
 }
 
 .card:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 20px #1db954;
+  background: #1db954;
 }
 
-/* PLAYER PRO */
+.card img {
+  width: 80px;
+  margin-bottom: 10px;
+}
+
+/* PLAYER */
 .player {
   position: fixed;
   bottom: 0;
   width: 100%;
-  background: rgba(0,0,0,0.8);
-  backdrop-filter: blur(15px);
+  background: #111;
   padding: 15px;
+  border-top: 1px solid #333;
+}
+
+.station {
   text-align: center;
-  border-top: 1px solid #222;
+  font-size: 16px;
 }
 
-#now {
-  font-size: 14px;
-  color: #aaa;
-  margin-bottom: 10px;
+.controls {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
 }
 
-/* BOTÓN PRO */
-button {
-  background: radial-gradient(circle, #1db954, #0a7d34);
-  border: none;
-  padding: 18px;
+.play {
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
+  border: none;
+  background: #1db954;
   color: white;
-  font-size: 20px;
-  box-shadow: 0 0 15px #1db954;
+  font-size: 22px;
 }
 
-/* ANIMACIÓN */
-@keyframes pulse {
-  0% { box-shadow: 0 0 10px #1db954; }
-  50% { box-shadow: 0 0 25px #1db954; }
-  100% { box-shadow: 0 0 10px #1db954; }
+/* BARRAS */
+.eq {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 5px;
 }
 
-button {
-  animation: pulse 2s infinite;
+.bar {
+  width: 4px;
+  height: 10px;
+  background: #1db954;
+  animation: b 1s infinite;
+}
+
+.bar:nth-child(2){animation-delay:.2s}
+.bar:nth-child(3){animation-delay:.4s}
+.bar:nth-child(4){animation-delay:.6s}
+
+@keyframes b {
+  0%,100%{height:5px}
+  50%{height:15px}
 }
 </style>
 </head>
 
 <body>
 
-<header>🔥 URBAN RADIO PRO</header>
+<div class="header">
+  <div class="title">🎧 Urban Radio PRO</div>
+</div>
+
+<div class="section">🌎 Radios en Vivo</div>
 
 <div class="grid">
 
-<div class="card" onclick="playRadio('los40')">LOS40</div>
-<div class="card" onclick="playRadio('kiss')">KISS FM</div>
-<div class="card" onclick="playRadio('nrj')">NRJ</div>
-<div class="card" onclick="playRadio('dance')">DANCE</div>
-<div class="card" onclick="playRadio('romantic')">ROMANTIC</div>
-<div class="card" onclick="playRadio('international')">GLOBAL</div>
+<div class="card" onclick="play('LOS40')">
+<img src="https://upload.wikimedia.org/wikipedia/commons/6/6a/Los_40_logo.svg">
+<p>LOS40</p>
+</div>
+
+<div class="card" onclick="play('NRJ')">
+<img src="https://upload.wikimedia.org/wikipedia/commons/7/7a/NRJ_logo.svg">
+<p>NRJ</p>
+</div>
+
+<div class="card" onclick="play('KISS')">
+<img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Kiss_FM_Logo.svg">
+<p>KISS FM</p>
+</div>
+
+<div class="card" onclick="play('DANCE')">
+<img src="https://cdn-icons-png.flaticon.com/512/727/727245.png">
+<p>Dance Wave</p>
+</div>
+
+<div class="card" onclick="play('BBC')">
+<img src="https://cdn-icons-png.flaticon.com/512/25/25694.png">
+<p>BBC World</p>
+</div>
+
+<div class="card" onclick="play('JAZZ')">
+<img src="https://cdn-icons-png.flaticon.com/512/727/727218.png">
+<p>Jazz Radio</p>
+</div>
 
 </div>
 
+<div class="section">🎵 Playlists (Sin Copyright)</div>
+
+<div class="grid">
+
+<div class="card" onclick="play('HIPHOP')">
+<p>🔥 Hip Hop</p>
+</div>
+
+<div class="card" onclick="play('LOFI')">
+<p>🌙 LoFi Chill</p>
+</div>
+
+<div class="card" onclick="play('BALADAS')">
+<p>❤️ Baladas</p>
+</div>
+
+<div class="card" onclick="play('LATINO')">
+<p>🌎 Rap Latino</p>
+</div>
+
+</div>
+
+<!-- PLAYER -->
 <div class="player">
-<div id="now">Selecciona una radio</div>
-<button onclick="toggle()">▶</button>
+<div class="station" id="name">Nada reproduciendo</div>
+
+<div class="eq">
+<div class="bar"></div>
+<div class="bar"></div>
+<div class="bar"></div>
+<div class="bar"></div>
+</div>
+
+<div class="controls">
+<button class="play" onclick="toggle()">▶</button>
+</div>
 </div>
 
 <audio id="audio"></audio>
 
 <script>
 let audio = document.getElementById("audio");
+let current = "";
 
-const radios = {
-  los40: "https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40.mp3",
-  kiss: "https://kissfm.kissfmradio.cires21.com/kissfm.mp3",
-  nrj: "https://scdn.nrjaudio.fm/adwz1/fr/30001/mp3_128.mp3",
-  dance: "https://stream.rcast.net/220602",
-  romantic: "https://streaming.radionomy.com/RomanticHits",
-  international: "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service"
+/* RADIOS + PLAYLIST */
+const streams = {
+
+LOS40: "https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40.mp3",
+NRJ: "https://scdn.nrjaudio.fm/adwz1/fr/30001/mp3_128.mp3",
+KISS: "https://kissfm.kissfmradio.cires21.com/kissfm.mp3",
+DANCE: "https://stream.rcast.net/220602",
+BBC: "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service",
+JAZZ: "https://jazz-wr01.ice.infomaniak.ch/jazz-wr01-128.mp3",
+
+/* PLAYLISTS */
+HIPHOP: "https://stream.zeno.fm/f3h1r7m9fwzuv",
+LOFI: "https://stream.zeno.fm/0r0xa792kwzuv",
+BALADAS: "https://stream.zeno.fm/8z8v3p9wzqzuv",
+LATINO: "https://stream.zeno.fm/4wq9x9rwq7zuv"
+
 };
 
-function playRadio(name){
-  audio.src = radios[name];
+function play(name){
+  current = name;
+  audio.src = streams[name];
   audio.play();
-  document.getElementById("now").innerText = "🔊 " + name.toUpperCase();
+  document.getElementById("name").innerText = "▶ " + name;
 }
 
 function toggle(){
   if(audio.paused) audio.play();
   else audio.pause();
 }
+
+/* AUTO FIX STREAM */
+audio.onerror = function(){
+  document.getElementById("name").innerText = "Reconectando...";
+  audio.load();
+  audio.play();
+};
 </script>
 
 </body>

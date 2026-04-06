@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Urban Radio Perú</title>
 
-<link rel="manifest" href="manifest.json">
-
 <style>
 body{
   margin:0;
@@ -15,7 +13,6 @@ body{
   color:white;
 }
 
-/* LOGO */
 .logo{
   text-align:center;
   padding:20px;
@@ -26,25 +23,11 @@ body{
   -webkit-text-fill-color:transparent;
 }
 
-/* SEARCH */
-.search{
-  width:90%;
-  margin:auto;
-  display:block;
-  padding:10px;
-  border-radius:20px;
-  border:none;
-  background:#181818;
-  color:white;
-}
-
-/* GRID */
 .grid{
   display:grid;
   grid-template-columns:repeat(2,1fr);
   gap:12px;
   padding:12px;
-  padding-bottom:180px;
 }
 
 .card{
@@ -52,20 +35,8 @@ body{
   padding:15px;
   border-radius:15px;
   text-align:center;
-  position:relative;
 }
 
-.card:hover{
-  background:#ff0055;
-}
-
-.fav{
-  position:absolute;
-  top:5px;
-  right:10px;
-}
-
-/* PLAYER */
 .player{
   position:fixed;
   bottom:0;
@@ -74,22 +45,10 @@ body{
   padding:10px;
 }
 
-.cover{
-  width:50px;
-  border-radius:10px;
-}
-
-.row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
 .controls{
   display:flex;
   justify-content:center;
   gap:15px;
-  margin-top:5px;
 }
 
 button{
@@ -99,8 +58,10 @@ button{
   border-radius:50%;
 }
 
-input[type=range]{
+#yt{
   width:100%;
+  height:220px;
+  border:none;
 }
 </style>
 </head>
@@ -109,20 +70,21 @@ input[type=range]{
 
 <div class="logo">🎧 URBAN RADIO PERÚ 🇵🇪</div>
 
-<input class="search" id="search" placeholder="Buscar...">
+<!-- RADIOS -->
+<div class="grid">
+<div class="card" onclick="playRadio('los40')">LOS40</div>
+<div class="card" onclick="playRadio('rpp')">RPP</div>
+<div class="card" onclick="playRadio('exitosa')">Exitosa</div>
+</div>
 
-<div class="grid" id="grid"></div>
+<!-- YOUTUBE PLAYER -->
+<div class="logo" style="font-size:20px;">🎤 NORICK</div>
 
-<div class="grid" id="songs"></div>
+<div id="player"></div>
 
 <div class="player">
 
-<div class="row">
-<img id="cover" class="cover" src="https://via.placeholder.com/50">
-<div id="title">Nada sonando</div>
-</div>
-
-<input type="range" id="progress" value="0">
+<div id="title">Selecciona canción</div>
 
 <div class="controls">
 <button onclick="prev()">⏮</button>
@@ -130,116 +92,89 @@ input[type=range]{
 <button onclick="next()">⏭</button>
 </div>
 
-<input type="range" id="volume" min="0" max="1" step="0.01">
+</div>
 
 <audio id="audio"></audio>
 
-</div>
+<script src="https://www.youtube.com/iframe_api"></script>
 
 <script>
 
-/* DATOS */
-const radios=[
-{name:"LOS40",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40.mp3"},
-{name:"RPP",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/RPP_SC"},
-{name:"Exitosa",url:"https://cu.onliv3.com/live/exitosa.mp3"}
-];
+/* RADIOS */
+let audio=document.getElementById("audio");
 
-const canciones=[
-{name:"Hip Hop Beat",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"},
-{name:"LoFi Chill",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"},
-{name:"Rap Flow",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"}
-];
+const radios={
+los40:"https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40.mp3",
+rpp:"https://playerservices.streamtheworld.com/api/livestream-redirect/RPP_SC",
+exitosa:"https://cu.onliv3.com/live/exitosa.mp3"
+};
 
-let lista=[...radios,...canciones];
-let index=0;
-
-const grid=document.getElementById("grid");
-const songs=document.getElementById("songs");
-const audio=document.getElementById("audio");
-const title=document.getElementById("title");
-const cover=document.getElementById("cover");
-const progress=document.getElementById("progress");
-const volume=document.getElementById("volume");
-
-/* LOGO */
-function logo(n){
- return "https://ui-avatars.com/api/?name="+n;
+function playRadio(r){
+ audio.src=radios[r];
+ audio.play();
+ document.getElementById("title").innerText="▶ "+r;
 }
 
-/* PLAY */
-function play(i){
- index=i;
- const item=lista[i];
- audio.src=item.url;
- audio.play();
- title.textContent=item.name;
- cover.src=logo(item.name);
+/* NORICK PLAYLIST (VIDEOS REALES) */
+const playlist=[
+"5pJY6Y9g9I0",
+"0KSOMA3QBU0",
+"fLexgOxsZu0",
+"3JZ4pnNtyxQ",
+"Zi_XLOBDo_Y",
+"2Vv-BfVoq4g",
+"ktvTqknDobU",
+"RgKAFK5djSk",
+"OPf0YbXqDm0",
+"09R8_2nJtjg"
+];
+
+let player;
+let index=0;
+
+/* YOUTUBE INIT */
+function onYouTubeIframeAPIReady(){
+ player=new YT.Player('player',{
+  height:'220',
+  width:'100%',
+  videoId:playlist[index],
+  playerVars:{'autoplay':0},
+  events:{
+    'onReady':()=>{}
+  }
+ });
 }
 
 /* CONTROLES */
+function playYT(){
+ player.playVideo();
+}
+
+function pauseYT(){
+ player.pauseVideo();
+}
+
 function toggle(){
- audio.paused?audio.play():audio.pause();
+ let state=player.getPlayerState();
+ if(state==1){
+  player.pauseVideo();
+ }else{
+  player.playVideo();
+ }
 }
 
 function next(){
  index++;
- if(index>=lista.length) index=0;
- play(index);
+ if(index>=playlist.length) index=0;
+ player.loadVideoById(playlist[index]);
 }
 
 function prev(){
  index--;
- if(index<0) index=lista.length-1;
- play(index);
+ if(index<0) index=playlist.length-1;
+ player.loadVideoById(playlist[index]);
 }
 
-/* PROGRESO */
-audio.ontimeupdate=()=>{
- if(audio.duration){
-  progress.value=(audio.currentTime/audio.duration)*100;
- }
-};
-
-progress.oninput=()=>{
- audio.currentTime=(progress.value/100)*audio.duration;
-};
-
-/* VOLUMEN */
-volume.oninput=()=>{
- audio.volume=volume.value;
-};
-
-/* RENDER */
-function render(){
- lista.forEach((r,i)=>{
-  const d=document.createElement("div");
-  d.className="card";
-  d.innerHTML=`<p>${r.name}</p>`;
-  d.onclick=()=>play(i);
-  grid.appendChild(d);
- });
-}
-
-render();
-
-/* BUSCAR */
-search.oninput=e=>{
- const t=e.target.value.toLowerCase();
- grid.innerHTML="";
- lista.filter(r=>r.name.toLowerCase().includes(t)).forEach((r,i)=>{
-  const d=document.createElement("div");
-  d.className="card";
-  d.innerHTML=`<p>${r.name}</p>`;
-  d.onclick=()=>play(i);
-  grid.appendChild(d);
- });
-};
-
-/* PWA */
-if ('serviceWorker' in navigator) {
- navigator.serviceWorker.register('sw.js');
-}
 </script>
 
 </body>

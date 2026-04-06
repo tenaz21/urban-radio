@@ -3,35 +3,37 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Urban Music PRO</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+<title>Urban Radio Perú</title>
 
 <style>
-body {
+body{
   margin:0;
-  font-family:Poppins;
-  background:#0d0d0d;
+  font-family:Arial;
+  background:#0b0b0b;
   color:white;
 }
 
-h1{
+/* LOGO */
+.logo{
+  text-align:center;
   padding:20px;
-  color:#1db954;
+  font-size:32px;
+  font-weight:bold;
+  background:linear-gradient(90deg,#ff0000,#ffd000,#00ff66);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
 
-.section{
-  padding:10px 20px;
-  color:#aaa;
-}
-
+/* GRID */
 .grid{
   display:grid;
   grid-template-columns:repeat(2,1fr);
-  gap:12px;
+  gap:15px;
   padding:15px;
 }
 
+/* CARDS */
 .card{
   background:#181818;
   padding:20px;
@@ -41,8 +43,8 @@ h1{
 }
 
 .card:hover{
-  background:#1db954;
   transform:scale(1.05);
+  background:#ff0055;
 }
 
 /* PLAYER */
@@ -56,69 +58,40 @@ h1{
 }
 
 button{
-  background:#1db954;
+  background:#00ff66;
   border:none;
   padding:15px;
   border-radius:50%;
   font-size:20px;
-  color:white;
 }
 </style>
 </head>
 
 <body>
 
-<h1>🎧 Urban Music PRO</h1>
-
-<div class="section">🔥 PLAYLISTS</div>
-
-<div class="grid">
-
-<div class="card" onclick="play('hiphop')">Hip Hop 24/7</div>
-<div class="card" onclick="play('lofi')">LoFi Chill</div>
-<div class="card" onclick="play('latin')">Rap Latino</div>
-<div class="card" onclick="play('baladas')">Baladas</div>
-
+<div class="logo">
+🎧 URBAN RADIO PERÚ 🇵🇪
 </div>
 
-<div class="section">🌎 RADIOS (50+)</div>
-
 <div class="grid">
 
-<!-- RADIOS -->
 <div class="card" onclick="play('los40')">LOS40</div>
-<div class="card" onclick="play('nrj')">NRJ</div>
-<div class="card" onclick="play('kiss')">KISS FM</div>
+<div class="card" onclick="play('rpp')">RPP</div>
+<div class="card" onclick="play('exitosa')">Exitosa</div>
+<div class="card" onclick="play('oxigeno')">Oxígeno</div>
+<div class="card" onclick="play('felicidad')">La Inolvidable</div>
+<div class="card" onclick="play('planet')">Radio Planeta</div>
+
+<!-- INTERNACIONALES -->
 <div class="card" onclick="play('bbc')">BBC</div>
+<div class="card" onclick="play('kiss')">Kiss FM</div>
+<div class="card" onclick="play('nrj')">NRJ</div>
 <div class="card" onclick="play('dance')">Dance Wave</div>
-<div class="card" onclick="play('jazz')">Jazz</div>
-
-<!-- MÁS RADIOS -->
-<div class="card" onclick="play('rock')">Rock FM</div>
-<div class="card" onclick="play('hits')">Hits Radio</div>
-<div class="card" onclick="play('classic')">Classic FM</div>
-<div class="card" onclick="play('energy')">Energy</div>
-<div class="card" onclick="play('europa')">Europa FM</div>
-<div class="card" onclick="play('mega')">MegaStar</div>
-
-<div class="card" onclick="play('urban')">Urban Radio</div>
-<div class="card" onclick="play('electro')">Electro Radio</div>
-<div class="card" onclick="play('deep')">Deep House</div>
-<div class="card" onclick="play('trance')">Trance</div>
-<div class="card" onclick="play('reggaeton')">Reggaeton</div>
-<div class="card" onclick="play('latinpop')">Latin Pop</div>
-
-<div class="card" onclick="play('retro')">Retro Hits</div>
-<div class="card" onclick="play('mix')">Mix Radio</div>
-<div class="card" onclick="play('club')">Club Music</div>
-<div class="card" onclick="play('chill')">Chill Out</div>
-<div class="card" onclick="play('top')">Top 40</div>
-<div class="card" onclick="play('global')">Global Hits</div>
 
 </div>
 
 <div class="player">
-<div id="now">Nada reproduciendo</div>
+<div id="status">Nada reproduciendo</div>
 <button onclick="toggle()">▶</button>
 </div>
 
@@ -127,61 +100,43 @@ button{
 <script>
 let audio=document.getElementById("audio");
 
-/* STREAMS */
-const s={
+const radios={
 
-/* PLAYLISTS */
-hiphop:"https://stream.zeno.fm/f3h1r7m9fwzuv",
-lofi:"https://stream.zeno.fm/0r0xa792kwzuv",
-latin:"https://stream.zeno.fm/4wq9x9rwq7zuv",
-baladas:"https://stream.zeno.fm/8z8v3p9wzqzuv",
-
-/* RADIOS */
 los40:"https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40.mp3",
-nrj:"https://scdn.nrjaudio.fm/adwz1/fr/30001/mp3_128.mp3",
-kiss:"https://kissfm.kissfmradio.cires21.com/kissfm.mp3",
+
+rpp:"https://playerservices.streamtheworld.com/api/livestream-redirect/RPP_SC",
+
+exitosa:"https://cu.onliv3.com/live/exitosa.mp3",
+
+oxigeno:"https://playerservices.streamtheworld.com/api/livestream-redirect/OXIGENO.mp3",
+
+felicidad:"https://playerservices.streamtheworld.com/api/livestream-redirect/INOLVIDABLE.mp3",
+
+planet:"https://playerservices.streamtheworld.com/api/livestream-redirect/PLANETA.mp3",
+
 bbc:"https://stream.live.vc.bbcmedia.co.uk/bbc_world_service",
-dance:"https://stream.rcast.net/220602",
-jazz:"https://jazz-wr01.ice.infomaniak.ch/jazz-wr01-128.mp3",
 
-rock:"https://stream.rockradio.com/rock",
-hits:"https://stream.hitsradio.com/hits",
-classic:"https://media-ice.musicradio.com/ClassicFMMP3",
-energy:"https://scdn.nrjaudio.fm/fr/30001/mp3_128.mp3",
-europa:"https://europafm-live.cdn.mdstrm.com/live-audio",
-mega:"https://megastar-cope-rrcast.flumotion.com/cope/megastar.mp3",
+kiss:"https://kissfm.kissfmradio.cires21.com/kissfm.mp3",
 
-urban:"https://stream.zeno.fm/8h7y2n0y9wzuv",
-electro:"https://stream.zeno.fm/electro",
-deep:"https://stream.zeno.fm/deephouse",
-trance:"https://stream.zeno.fm/trance",
-reggaeton:"https://stream.zeno.fm/reggaeton",
-latinpop:"https://stream.zeno.fm/latinpop",
+nrj:"https://scdn.nrjaudio.fm/adwz1/fr/30001/mp3_128.mp3",
 
-retro:"https://stream.zeno.fm/retro",
-mix:"https://stream.zeno.fm/mix",
-club:"https://stream.zeno.fm/club",
-chill:"https://stream.zeno.fm/chill",
-top:"https://stream.zeno.fm/top",
-global:"https://stream.zeno.fm/global"
+dance:"https://stream.rcast.net/220602"
 
 };
 
-function play(n){
- audio.src=s[n];
+function play(r){
+ audio.src=radios[r];
  audio.play();
- document.getElementById("now").innerText="▶ "+n;
+ document.getElementById("status").innerText="▶ "+r;
 }
 
 function toggle(){
  audio.paused?audio.play():audio.pause();
 }
 
-/* AUTO RECONEXIÓN */
+/* SI FALLA */
 audio.onerror=()=>{
- document.getElementById("now").innerText="Reconectando...";
- audio.load();
- audio.play();
+ document.getElementById("status").innerText="❌ Radio no disponible";
 }
 </script>
 

@@ -19,7 +19,7 @@ body{
 .logo{
   text-align:center;
   padding:20px;
-  font-size:30px;
+  font-size:28px;
   font-weight:bold;
   background:linear-gradient(90deg,#ff0000,#ffd000,#00ff66,#00c3ff);
   -webkit-background-clip:text;
@@ -44,10 +44,9 @@ body{
   grid-template-columns:repeat(2,1fr);
   gap:12px;
   padding:12px;
-  padding-bottom:120px;
+  padding-bottom:180px;
 }
 
-/* CARD */
 .card{
   background:#181818;
   padding:15px;
@@ -60,7 +59,6 @@ body{
   background:#ff0055;
 }
 
-/* FAVORITO */
 .fav{
   position:absolute;
   top:5px;
@@ -74,9 +72,6 @@ body{
   width:100%;
   background:#111;
   padding:10px;
-  display:flex;
-  align-items:center;
-  gap:10px;
 }
 
 .cover{
@@ -84,8 +79,17 @@ body{
   border-radius:10px;
 }
 
-.info{
-  flex:1;
+.row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.controls{
+  display:flex;
+  justify-content:center;
+  gap:15px;
+  margin-top:5px;
 }
 
 button{
@@ -94,6 +98,10 @@ button{
   padding:10px;
   border-radius:50%;
 }
+
+input[type=range]{
+  width:100%;
+}
 </style>
 </head>
 
@@ -101,139 +109,132 @@ button{
 
 <div class="logo">🎧 URBAN RADIO PERÚ 🇵🇪</div>
 
-<input class="search" id="search" placeholder="Buscar radio...">
+<input class="search" id="search" placeholder="Buscar...">
 
-<!-- RADIOS -->
-<div class="logo" style="font-size:20px;">📻 RADIOS</div>
 <div class="grid" id="grid"></div>
 
-<!-- CANCIONES -->
-<div class="logo" style="font-size:20px;">🎵 CANCIONES</div>
 <div class="grid" id="songs"></div>
 
-<!-- PLAYER -->
 <div class="player">
+
+<div class="row">
 <img id="cover" class="cover" src="https://via.placeholder.com/50">
-<div class="info">
 <div id="title">Nada sonando</div>
 </div>
-<button id="playBtn">▶</button>
+
+<input type="range" id="progress" value="0">
+
+<div class="controls">
+<button onclick="prev()">⏮</button>
+<button onclick="toggle()">▶</button>
+<button onclick="next()">⏭</button>
+</div>
+
+<input type="range" id="volume" min="0" max="1" step="0.01">
+
 <audio id="audio"></audio>
+
 </div>
 
 <script>
 
-/* RADIOS ESTABLES */
+/* DATOS */
 const radios=[
 {name:"LOS40",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40.mp3"},
 {name:"RPP",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/RPP_SC"},
-{name:"Exitosa",url:"https://cu.onliv3.com/live/exitosa.mp3"},
-{name:"Oxígeno",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/OXIGENO.mp3"},
-{name:"Planeta",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/PLANETA.mp3"},
-{name:"BBC",url:"https://stream.live.vc.bbcmedia.co.uk/bbc_world_service"},
-{name:"NRJ",url:"https://scdn.nrjaudio.fm/adwz1/fr/30001/mp3_128.mp3"},
-{name:"KISS FM",url:"https://kissfm.kissfmradio.cires21.com/kissfm.mp3"}
+{name:"Exitosa",url:"https://cu.onliv3.com/live/exitosa.mp3"}
 ];
 
-/* CANCIONES */
 const canciones=[
 {name:"Hip Hop Beat",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"},
-{name:"Chill Vibes",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"},
-{name:"Rap Instrumental",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"},
-{name:"LoFi Relax",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"},
-{name:"Beat Flow",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3"},
-{name:"Urban Mood",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3"},
-{name:"Street Beat",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3"},
-{name:"Chill Night",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3"},
-{name:"Deep Flow",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3"},
-{name:"Trap Beat",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3"}
+{name:"LoFi Chill",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"},
+{name:"Rap Flow",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"}
 ];
 
-let favoritos=JSON.parse(localStorage.getItem("fav"))||[];
+let lista=[...radios,...canciones];
+let index=0;
 
 const grid=document.getElementById("grid");
 const songs=document.getElementById("songs");
 const audio=document.getElementById("audio");
 const title=document.getElementById("title");
 const cover=document.getElementById("cover");
-const playBtn=document.getElementById("playBtn");
+const progress=document.getElementById("progress");
+const volume=document.getElementById("volume");
 
 /* LOGO */
 function logo(n){
- return "https://ui-avatars.com/api/?name="+encodeURIComponent(n)+"&background=ff0000&color=fff";
+ return "https://ui-avatars.com/api/?name="+n;
 }
 
 /* PLAY */
-function playItem(item){
+function play(i){
+ index=i;
+ const item=lista[i];
  audio.src=item.url;
  audio.play();
  title.textContent=item.name;
  cover.src=logo(item.name);
 }
 
-/* RADIOS */
-function renderRadios(){
- grid.innerHTML="";
- radios.forEach(r=>{
-  const fav=favoritos.includes(r.name);
+/* CONTROLES */
+function toggle(){
+ audio.paused?audio.play():audio.pause();
+}
 
+function next(){
+ index++;
+ if(index>=lista.length) index=0;
+ play(index);
+}
+
+function prev(){
+ index--;
+ if(index<0) index=lista.length-1;
+ play(index);
+}
+
+/* PROGRESO */
+audio.ontimeupdate=()=>{
+ if(audio.duration){
+  progress.value=(audio.currentTime/audio.duration)*100;
+ }
+};
+
+progress.oninput=()=>{
+ audio.currentTime=(progress.value/100)*audio.duration;
+};
+
+/* VOLUMEN */
+volume.oninput=()=>{
+ audio.volume=volume.value;
+};
+
+/* RENDER */
+function render(){
+ lista.forEach((r,i)=>{
   const d=document.createElement("div");
   d.className="card";
-
-  d.innerHTML=`
-   <span class="fav">${fav?"❤️":"🤍"}</span>
-   <p>${r.name}</p>
-  `;
-
-  d.onclick=()=>playItem(r);
-
-  d.querySelector(".fav").onclick=(e)=>{
-    e.stopPropagation();
-    if(fav){
-      favoritos=favoritos.filter(f=>f!==r.name);
-    }else{
-      favoritos.push(r.name);
-    }
-    localStorage.setItem("fav",JSON.stringify(favoritos));
-    renderRadios();
-  };
-
+  d.innerHTML=`<p>${r.name}</p>`;
+  d.onclick=()=>play(i);
   grid.appendChild(d);
  });
 }
 
-/* CANCIONES */
-function renderSongs(){
- songs.innerHTML="";
- canciones.forEach(c=>{
-  const d=document.createElement("div");
-  d.className="card";
+render();
 
-  d.innerHTML=`<p>${c.name}</p>`;
-
-  d.onclick=()=>playItem(c);
-
-  songs.appendChild(d);
- });
-}
-
-/* BUSCADOR */
+/* BUSCAR */
 search.oninput=e=>{
  const t=e.target.value.toLowerCase();
- renderRadios(radios.filter(r=>r.name.toLowerCase().includes(t)));
+ grid.innerHTML="";
+ lista.filter(r=>r.name.toLowerCase().includes(t)).forEach((r,i)=>{
+  const d=document.createElement("div");
+  d.className="card";
+  d.innerHTML=`<p>${r.name}</p>`;
+  d.onclick=()=>play(i);
+  grid.appendChild(d);
+ });
 };
-
-/* PLAY BTN */
-playBtn.onclick=()=>{
- audio.paused?audio.play():audio.pause();
-};
-
-audio.onplay=()=>playBtn.textContent="⏸";
-audio.onpause=()=>playBtn.textContent="▶";
-
-/* INIT */
-renderRadios();
-renderSongs();
 
 /* PWA */
 if ('serviceWorker' in navigator) {

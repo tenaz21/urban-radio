@@ -1,10 +1,10 @@
 {
-  "name": "Urban Radio",
-  "short_name": "Radio",
-  "start_url": "/",
+  "name": "Urban Flow Radio",
+  "short_name": "Urban Radio",
+  "start_url": ".",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#22c55e",
+  "background_color": "#020617",
+  "theme_color": "#020617",
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/727/727245.png",

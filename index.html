@@ -3,195 +3,240 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>URBAN FLOW RADIO</title>
+<title>Urban Flow Perú</title>
+
+<!-- PWA (instalable) -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#121212">
 
 <style>
+:root{
+  --bg:#0b0b0b;
+  --card:#141414;
+  --muted:#9aa0a6;
+  --accent:#1db954;
+}
+*{box-sizing:border-box}
 body{
   margin:0;
-  font-family:Segoe UI;
-  background:linear-gradient(180deg,#000,#1a0000);
-  color:white;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  background:linear-gradient(180deg,#000,#1a0000 60%, #000);
+  color:#fff;
 }
 
 /* HEADER */
 .header{
-  text-align:center;
-  padding:15px;
+  position:sticky; top:0;
+  backdrop-filter: blur(12px);
+  background: rgba(0,0,0,.6);
+  padding:10px 14px 12px;
+  border-bottom:1px solid #111;
+  z-index:10;
 }
-.header img{
-  width:90%;
-  max-width:350px;
+.brand{
+  display:flex; align-items:center; gap:10px;
+}
+.brand img{
+  width:36px; height:36px; border-radius:8px;
+}
+.brand h1{
+  font-size:16px; margin:0; letter-spacing:.8px;
+}
+.search{
+  margin-top:10px;
+  width:100%; padding:12px 14px;
+  border-radius:999px; border:none;
+  background:#1b1b1b; color:#fff;
 }
 
-/* SEARCH */
-.search{
-  width:85%;
-  margin:auto;
-  padding:12px;
-  border-radius:25px;
-  border:none;
-  display:block;
+/* CATEGORÍAS */
+.cats{
+  display:flex; gap:8px; overflow:auto;
+  padding:10px 0 0;
 }
+.cat{
+  padding:7px 12px; border-radius:999px;
+  background:#1f1f1f; color:#ddd; font-size:12px;
+}
+.cat.active{ background:var(--accent); color:#000; }
 
 /* GRID */
 .grid{
   display:grid;
   grid-template-columns:repeat(2,1fr);
-  gap:15px;
-  padding:15px;
+  gap:12px;
+  padding:14px;
   padding-bottom:160px;
 }
 
-/* CARD PRO */
+/* CARD */
 .card{
-  background:linear-gradient(145deg,#111,#1a1a1a);
-  border-radius:20px;
-  padding:15px;
-  text-align:center;
-  position:relative;
-  box-shadow:0 0 15px rgba(0,255,150,0.1);
-  transition:.3s;
-}
-
-.card:hover{
-  transform:scale(1.05);
-  box-shadow:0 0 25px rgba(0,255,150,0.4);
-}
-
-/* PLAY BUTTON */
-.play{
-  position:absolute;
-  bottom:10px;
-  right:10px;
-  background:#1db954;
-  border-radius:50%;
-  padding:10px;
-}
-
-/* FAVORITO */
-.fav{
-  position:absolute;
-  top:8px;
-  right:10px;
-  font-size:18px;
-}
-
-/* PLAYER */
-.player{
-  position:fixed;
-  bottom:0;
-  width:100%;
-  background:rgba(0,0,0,0.95);
-  backdrop-filter:blur(10px);
-  padding:10px;
-}
-
-.player h3{
-  margin:5px 0;
-}
-
-/* CONTROLES */
-.controls{
-  display:flex;
-  justify-content:center;
-  gap:20px;
-}
-
-.btn{
-  background:#1db954;
-  border:none;
-  border-radius:50%;
+  background:var(--card);
+  border-radius:16px;
   padding:14px;
-  font-size:16px;
+  position:relative;
+  box-shadow: 0 6px 20px rgba(0,0,0,.35);
+  transition:.2s;
+}
+.card:active{ transform:scale(.97); }
+.title{
+  font-weight:600; font-size:14px; margin:0 0 18px;
 }
 
-/* PROGRESS */
+/* Botón play flotante */
+.play{
+  position:absolute; right:10px; bottom:10px;
+  width:46px; height:46px;
+  border-radius:50%;
+  background:var(--accent);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 8px 20px rgba(29,185,84,.5);
+}
+
+/* Favorito */
+.fav{
+  position:absolute; right:10px; top:8px; font-size:18px;
+}
+
+/* MINI PLAYER */
+.player{
+  position:fixed; bottom:0; left:0; right:0;
+  background:rgba(20,20,20,.9);
+  backdrop-filter: blur(16px);
+  border-top:1px solid #222;
+  padding:10px 12px;
+}
+.row{
+  display:flex; align-items:center; gap:10px;
+}
+.cover{
+  width:46px; height:46px; border-radius:10px;
+  background:#222;
+}
+.meta{
+  flex:1;
+}
+.meta .name{
+  font-size:14px; font-weight:600;
+}
+.meta .sub{
+  font-size:12px; color:var(--muted);
+}
+
+/* Controles */
+.ctrls{
+  display:flex; align-items:center; gap:8px;
+}
+.btn{
+  width:40px; height:40px; border-radius:50%;
+  background:var(--accent);
+  display:flex; align-items:center; justify-content:center;
+}
+
+/* Barra progreso */
 .progress{
   width:100%;
+  margin-top:8px;
 }
 
-/* EQ */
-.eq{
-  display:flex;
-  gap:3px;
-}
+/* Ecualizador */
+.eq{ display:flex; gap:3px; margin-top:4px;}
 .bar{
-  width:3px;
-  height:10px;
-  background:#1db954;
+  width:3px; height:10px; background:var(--accent);
   animation:move 1s infinite;
 }
 @keyframes move{
   0%,100%{height:5px}
-  50%{height:15px}
+  50%{height:14px}
 }
 </style>
 </head>
 
 <body>
 
+<!-- HEADER -->
 <div class="header">
-  <img src="logo.png">
+  <div class="brand">
+    <img src="logo.png">
+    <h1>URBAN FLOW PERÚ 🇵🇪</h1>
+  </div>
+  <input class="search" id="search" placeholder="Buscar radio...">
+
+  <div class="cats">
+    <div class="cat active" onclick="filtrar('all')">Todo</div>
+    <div class="cat" onclick="filtrar('urban')">Urban</div>
+    <div class="cat" onclick="filtrar('dance')">Electrónica</div>
+    <div class="cat" onclick="filtrar('chill')">Chill</div>
+  </div>
 </div>
 
-<input class="search" id="search" placeholder="Buscar...">
-
+<!-- GRID -->
 <div class="grid" id="grid"></div>
 
+<!-- PLAYER -->
 <div class="player">
-  <h3 id="titulo">Nada sonando</h3>
+  <div class="row">
+    <div class="cover" id="cover"></div>
 
-  <div class="eq">
-    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    <div class="meta">
+      <div class="name" id="title">Nada sonando</div>
+      <div class="sub">Urban Flow Radio</div>
+      <div class="eq">
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      </div>
+    </div>
+
+    <div class="ctrls">
+      <div class="btn" onclick="audio.play()">▶</div>
+      <div class="btn" onclick="audio.pause()">⏸</div>
+    </div>
   </div>
 
   <input type="range" id="progress" class="progress">
-
-  <div class="controls">
-    <button class="btn" onclick="audio.play()">▶</button>
-    <button class="btn" onclick="audio.pause()">⏸</button>
-  </div>
-
   <input type="range" id="vol" min="0" max="1" step="0.01">
 </div>
 
 <audio id="audio"></audio>
 
 <script>
-
 let radios=[
-{nombre:"Hip Hop Radio", url:"https://stream.0nlineradio.com/hip-hop"},
-{nombre:"Dance Wave", url:"https://dancewave.online/dance.mp3"},
-{nombre:"Radio Internacional", url:"https://streams.ilovemusic.de/iloveradio1.mp3"},
-{nombre:"LoFi Chill", url:"https://stream.zeno.fm/f3y6q8zq5wzuv"},
-{nombre:"Top 40 Mix", url:"https://stream.0nlineradio.com/top40"}
+{nombre:"Hip Hop Radio", tipo:"urban", url:"https://stream.0nlineradio.com/hip-hop"},
+{nombre:"Dance Wave", tipo:"dance", url:"https://dancewave.online/dance.mp3"},
+{nombre:"Radio Internacional", tipo:"all", url:"https://streams.ilovemusic.de/iloveradio1.mp3"},
+{nombre:"LoFi Chill", tipo:"chill", url:"https://stream.zeno.fm/f3y6q8zq5wzuv"},
+{nombre:"Top 40 Mix", tipo:"all", url:"https://stream.0nlineradio.com/top40"}
 ];
 
 let favoritos=JSON.parse(localStorage.getItem("fav"))||[];
+let lista=[...radios];
 
 const grid=document.getElementById("grid");
 const audio=document.getElementById("audio");
-const titulo=document.getElementById("titulo");
+const title=document.getElementById("title");
 
-/* RENDER */
-function render(lista){
+/* Render */
+function render(arr){
   grid.innerHTML="";
-  lista.forEach(r=>{
+  arr.forEach(r=>{
     const fav=favoritos.includes(r.nombre);
-
     const div=document.createElement("div");
     div.className="card";
-
     div.innerHTML=`
       <span class="fav">${fav?"❤️":"🤍"}</span>
-      <p>${r.nombre}</p>
+      <p class="title">${r.nombre}</p>
       <div class="play">▶</div>
     `;
 
     div.onclick=()=>{
       audio.src=r.url;
       audio.play();
-      titulo.textContent=r.nombre;
+      title.textContent=r.nombre;
+
+      // color dinámico
+      document.body.style.background=
+        "linear-gradient(180deg,#000,"+
+        ["#1db954","#ff0055","#ff9900","#00ccff"][Math.floor(Math.random()*4)]
+        +")";
     };
 
     div.querySelector(".fav").onclick=(e)=>{
@@ -202,31 +247,36 @@ function render(lista){
         favoritos.push(r.nombre);
       }
       localStorage.setItem("fav",JSON.stringify(favoritos));
-      render(radios);
+      render(lista);
     };
 
     grid.appendChild(div);
   });
 }
 
-/* BUSCAR */
+/* Filtro */
+function filtrar(t){
+  document.querySelectorAll(".cat").forEach(c=>c.classList.remove("active"));
+  event.target.classList.add("active");
+
+  lista = t==="all" ? radios : radios.filter(r=>r.tipo===t);
+  render(lista);
+}
+
+/* Buscar */
 search.oninput=e=>{
   const t=e.target.value.toLowerCase();
-  render(radios.filter(r=>r.nombre.toLowerCase().includes(t)));
+  render(lista.filter(r=>r.nombre.toLowerCase().includes(t)));
 };
 
-/* PROGRESO */
+/* Player */
 audio.ontimeupdate=()=>{
   progress.value=audio.currentTime;
   progress.max=audio.duration||0;
 };
-
-/* VOLUMEN */
 vol.oninput=()=>audio.volume=vol.value;
 
-/* INIT */
 render(radios);
-
 </script>
 
 </body>

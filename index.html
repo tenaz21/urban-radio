@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Urban Radio PRO</title>
 
-<link rel="manifest" href="manifest.json">
-
 <style>
 body{
   margin:0;
@@ -41,11 +39,6 @@ header{
   background:#334155;
 }
 
-img{
-  width:100%;
-  border-radius:10px;
-}
-
 .player{
   position:fixed;
   bottom:0;
@@ -56,6 +49,7 @@ img{
   justify-content:space-between;
   align-items:center;
 }
+
 button{
   padding:10px;
   border:none;
@@ -72,24 +66,28 @@ button{
 
 <div class="grid">
 
-<div class="card" onclick="play('https://stream-ssl.radioacktiva.com/stream')">
-<img src="https://i.imgur.com/8Km9tLL.png">
-<p>Rock</p>
-</div>
-
-<div class="card" onclick="play('https://stream.live.vc.bbcmedia.co.uk/bbc_radio_one')">
-<img src="https://i.imgur.com/5b6p8zC.png">
-<p>BBC One</p>
-</div>
-
 <div class="card" onclick="play('https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40.mp3')">
-<img src="https://i.imgur.com/zYIlgBl.png">
 <p>LOS40</p>
 </div>
 
-<div class="card" onclick="play('https://stream.zeno.fm/f3h3k1q0x1zuv')">
-<img src="https://i.imgur.com/Z6XK0nH.png">
-<p>Urbana</p>
+<div class="card" onclick="play('https://stream.0nlineradio.com/urban')">
+<p>Urban Radio</p>
+</div>
+
+<div class="card" onclick="play('https://dancewave.online/dance.mp3')">
+<p>Dance Wave</p>
+</div>
+
+<div class="card" onclick="play('https://streams.ilovemusic.de/iloveradio1.mp3')">
+<p>Radio Internacional</p>
+</div>
+
+<div class="card" onclick="play('https://stream.zeno.fm/0r0xa792kwzuv')">
+<p>Romantic Hits EU</p>
+</div>
+
+<div class="card" onclick="play('https://icecast.radiofrance.fr/fip-midfi.mp3')">
+<p>FIP Radio</p>
 </div>
 
 </div>
@@ -103,28 +101,49 @@ button{
 
 <script>
 let audio = document.getElementById("audio");
+let currentUrl = "";
 let playing = false;
 
+/* ▶ REPRODUCIR */
 function play(url){
+  currentUrl = url;
+
   audio.src = url;
-  audio.play();
-  document.getElementById("status").innerText = "Reproduciendo...";
-  playing = true;
+  audio.load();
+
+  audio.play().then(()=>{
+    document.getElementById("status").innerText = "Reproduciendo...";
+    playing = true;
+  }).catch(()=>{
+    alert("Toca nuevamente para iniciar la radio");
+  });
 }
 
+/* ▶ / ⏸ */
 function toggle(){
   if(playing){
     audio.pause();
     playing = false;
-  }else{
+  } else {
     audio.play();
     playing = true;
   }
 }
 
-// PWA
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('service-worker.js');
+/* 🔥 RECONEXIÓN AUTOMÁTICA */
+audio.addEventListener("error", reconnect);
+audio.addEventListener("stalled", reconnect);
+audio.addEventListener("ended", reconnect);
+
+function reconnect(){
+  if(currentUrl){
+    console.log("Reconectando...");
+    setTimeout(()=>{
+      audio.src = currentUrl;
+      audio.load();
+      audio.play();
+    },2000);
+  }
 }
 </script>
 

@@ -5,18 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Urban Flow</title>
 
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#020617">
+
 <style>
 :root{
-  --bg1:#020617;
-  --bg2:#0f172a;
+  --bg:#020617;
   --card:#1e293b;
-  --accent:#00f0ff;
+  --accent:#22c55e;
 }
 
 body{
   margin:0;
   font-family:'Segoe UI',sans-serif;
-  background:linear-gradient(180deg,var(--bg1),var(--bg2));
+  background:linear-gradient(180deg,#020617,#0f172a);
   color:white;
 }
 
@@ -35,7 +37,7 @@ body{
   padding:12px;
   border-radius:25px;
   border:none;
-  background:#1e293b;
+  background:var(--card);
   color:white;
   margin-top:10px;
 }
@@ -46,16 +48,16 @@ body{
   grid-template-columns:repeat(2,1fr);
   gap:12px;
   padding:15px;
-  padding-bottom:130px;
+  padding-bottom:150px;
 }
 
 .card{
   background:var(--card);
   border-radius:18px;
-  padding:10px;
+  padding:12px;
   position:relative;
   cursor:pointer;
-  transition:.25s;
+  transition:.2s;
 }
 
 .card:hover{
@@ -63,23 +65,15 @@ body{
   box-shadow:0 0 15px var(--accent);
 }
 
-.card img{
-  width:100%;
-  height:100px;
-  border-radius:12px;
-}
-
 .name{
   text-align:center;
   margin-top:6px;
 }
 
-/* FAVORITO */
 .fav{
   position:absolute;
   top:5px;
   right:8px;
-  font-size:18px;
 }
 
 /* PLAYER */
@@ -95,36 +89,8 @@ body{
   border-top:1px solid #1e293b;
 }
 
-.cover{
-  width:50px;
-  border-radius:10px;
-}
-
 .meta{
   flex:1;
-}
-
-.title2{
-  font-size:14px;
-}
-
-/* BARRAS ANIMADAS */
-.bars{
-  display:flex;
-  gap:2px;
-  height:12px;
-  margin-top:4px;
-}
-
-.bar{
-  width:3px;
-  background:var(--accent);
-  animation:beat .8s infinite;
-}
-
-@keyframes beat{
-  0%,100%{height:4px}
-  50%{height:12px}
 }
 
 .btn{
@@ -148,14 +114,8 @@ body{
 <div class="grid" id="grid"></div>
 
 <div class="player">
-  <img id="cover" class="cover" src="https://via.placeholder.com/50">
   <div class="meta">
-    <div id="title" class="title2">Nada sonando</div>
-    <div class="bars" id="bars">
-      <div class="bar"></div>
-      <div class="bar"></div>
-      <div class="bar"></div>
-    </div>
+    <div id="title">Nada sonando</div>
   </div>
   <button id="playBtn" class="btn">▶</button>
 </div>
@@ -164,12 +124,29 @@ body{
 
 <script>
 const radios = [
-{nombre:"LOS40", url:"https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40.mp3"},
-{nombre:"Urban Radio", url:"https://stream.0nlineradio.com/urban"},
-{nombre:"Dance Wave", url:"https://dancewave.online/dance.mp3"},
-{nombre:"Radio Internacional", url:"https://streams.ilovemusic.de/iloveradio1.mp3"},
-{nombre:"Romantic Hits", url:"https://stream.zeno.fm/0r0xa792kwzuv"},
-{nombre:"FIP Radio", url:"https://icecast.radiofrance.fr/fip-midfi.mp3"}
+{
+  nombre:"LOS40",
+  urls:[
+    "https://live.amperwave.net/direct/prisaradio-los40",
+    "https://streaming.radio.co/s97782a8e/listen"
+  ]
+},
+{
+  nombre:"Urban Radio",
+  urls:["https://stream.0nlineradio.com/urban"]
+},
+{
+  nombre:"Dance Wave",
+  urls:["https://dancewave.online/dance.mp3"]
+},
+{
+  nombre:"Radio Internacional",
+  urls:["https://streams.ilovemusic.de/iloveradio1.mp3"]
+},
+{
+  nombre:"Romantic Hits",
+  urls:["https://stream.zeno.fm/0r0xa792kwzuv"]
+}
 ];
 
 let favoritos = JSON.parse(localStorage.getItem("fav")) || [];
@@ -177,84 +154,47 @@ let favoritos = JSON.parse(localStorage.getItem("fav")) || [];
 const grid = document.getElementById("grid");
 const audio = document.getElementById("audio");
 const title = document.getElementById("title");
-const cover = document.getElementById("cover");
 const playBtn = document.getElementById("playBtn");
-const bars = document.getElementById("bars");
 
-let currentUrl = "";
+let currentRadio = null;
+let currentIndex = 0;
 let playing = false;
 
-/* LOGO */
-function logo(n){
-  return "https://ui-avatars.com/api/?name="+encodeURIComponent(n)+"&background=0ea5e9&color=fff";
+/* ▶ PLAY */
+function playRadio(r){
+  currentRadio = r;
+  currentIndex = 0;
+  tryPlay();
 }
 
-/* PLAY */
-function playRadio(r){
-  currentUrl = r.url;
-  audio.src = r.url;
+/* 🔄 AUTOSWITCH */
+function tryPlay(){
+  if(currentIndex >= currentRadio.urls.length){
+    title.textContent = "❌ No disponible";
+    return;
+  }
+
+  const url = currentRadio.urls[currentIndex];
+
+  audio.src = url;
   audio.load();
 
   audio.play().then(()=>{
-    title.textContent = r.nombre;
-    cover.src = logo(r.nombre);
+    title.textContent = "🎧 " + currentRadio.nombre;
     playing = true;
+  }).catch(()=>{
+    next();
   });
 }
 
-/* RECONEXIÓN */
-audio.addEventListener("error", reconnect);
-audio.addEventListener("stalled", reconnect);
-
-function reconnect(){
-  if(currentUrl){
-    setTimeout(()=>{
-      audio.src = currentUrl;
-      audio.play();
-    },2000);
-  }
+function next(){
+  currentIndex++;
+  setTimeout(tryPlay,1000);
 }
 
-/* RENDER */
-function render(list){
-  grid.innerHTML="";
-
-  list.forEach(r=>{
-    const isFav = favoritos.includes(r.nombre);
-
-    const d=document.createElement("div");
-    d.className="card";
-
-    d.innerHTML=`
-      <span class="fav">${isFav?"❤️":"🤍"}</span>
-      <img src="${logo(r.nombre)}">
-      <div class="name">${r.nombre}</div>
-    `;
-
-    d.onclick=()=>playRadio(r);
-
-    d.querySelector(".fav").onclick=(e)=>{
-      e.stopPropagation();
-
-      if(isFav){
-        favoritos = favoritos.filter(f=>f!==r.nombre);
-      }else{
-        favoritos.push(r.nombre);
-      }
-
-      localStorage.setItem("fav",JSON.stringify(favoritos));
-      render(radios);
-    };
-
-    grid.appendChild(d);
-  });
-}
-
-/* BUSCAR */
-search.oninput=e=>{
-  const t=e.target.value.toLowerCase();
-  render(radios.filter(r=>r.nombre.toLowerCase().includes(t)));
-};
+/* FALLAS */
+audio.addEventListener("error", next);
+audio.addEventListener("stalled", next);
 
 /* PLAY BTN */
 playBtn.onclick=()=>{
@@ -269,11 +209,55 @@ playBtn.onclick=()=>{
   }
 };
 
-audio.onplay=()=>playBtn.textContent="⏸";
-audio.onpause=()=>playBtn.textContent="▶";
+/* FAVORITOS */
+function toggleFav(nombre){
+  if(favoritos.includes(nombre)){
+    favoritos = favoritos.filter(f=>f!==nombre);
+  }else{
+    favoritos.push(nombre);
+  }
+  localStorage.setItem("fav",JSON.stringify(favoritos));
+  render(radios);
+}
+
+/* RENDER */
+function render(list){
+  grid.innerHTML="";
+  list.forEach(r=>{
+    const fav = favoritos.includes(r.nombre);
+
+    const d=document.createElement("div");
+    d.className="card";
+
+    d.innerHTML=`
+      <span class="fav">${fav?"❤️":"🤍"}</span>
+      <div class="name">${r.nombre}</div>
+    `;
+
+    d.onclick=()=>playRadio(r);
+
+    d.querySelector(".fav").onclick=(e)=>{
+      e.stopPropagation();
+      toggleFav(r.nombre);
+    };
+
+    grid.appendChild(d);
+  });
+}
+
+/* BUSCADOR */
+search.oninput=e=>{
+  const t=e.target.value.toLowerCase();
+  render(radios.filter(r=>r.nombre.toLowerCase().includes(t)));
+};
 
 /* INIT */
 render(radios);
+
+/* SERVICE WORKER */
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('service-worker.js');
+}
 </script>
 
 </body>

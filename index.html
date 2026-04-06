@@ -3,40 +3,105 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Urban Radio Perú</title>
+<title>Urban Flow</title>
 
 <style>
 body{
   margin:0;
-  font-family:Arial;
+  font-family:system-ui;
   background:#0b0b0b;
   color:white;
 }
 
-.logo{
-  text-align:center;
-  padding:20px;
-  font-size:28px;
-  font-weight:bold;
-  background:linear-gradient(90deg,#ff0000,#ffd000,#00ff66,#00c3ff);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+/* HEADER */
+.header{
+  padding:15px;
 }
 
-.grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
+.title{
+  font-size:24px;
+  font-weight:bold;
+  color:#00ff88;
+}
+
+/* SEARCH */
+.search{
+  width:100%;
   padding:12px;
+  border-radius:15px;
+  border:none;
+  background:#181818;
+  color:white;
+  margin-top:10px;
+}
+
+/* SECTION */
+.section{
+  padding:10px;
+}
+
+.section h2{
+  margin:10px 0;
+}
+
+/* CARDS */
+.cards{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
 }
 
 .card{
+  min-width:140px;
   background:#181818;
-  padding:15px;
   border-radius:15px;
+  padding:10px;
   text-align:center;
 }
 
+.card img{
+  width:100%;
+  border-radius:10px;
+}
+
+/* LIST */
+.list{
+  padding:10px;
+}
+
+.item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px;
+  border-radius:10px;
+}
+
+.item img{
+  width:50px;
+  border-radius:10px;
+}
+
+/* GENRES */
+.genres{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  padding:10px;
+}
+
+.genre{
+  padding:20px;
+  border-radius:15px;
+  font-weight:bold;
+}
+
+.pop{background:#ff0055;}
+.urbano{background:#00ff88;}
+.electro{background:#0099ff;}
+.rock{background:#ff8800;}
+
+/* PLAYER */
 .player{
   position:fixed;
   bottom:0;
@@ -52,127 +117,141 @@ body{
 }
 
 button{
-  background:#00ff66;
+  background:#00ff88;
   border:none;
-  padding:10px;
+  padding:12px;
   border-radius:50%;
-}
-
-#yt{
-  width:100%;
-  height:220px;
-  border:none;
 }
 </style>
 </head>
 
 <body>
 
-<div class="logo">🎧 URBAN RADIO PERÚ 🇵🇪</div>
-
-<!-- RADIOS -->
-<div class="grid">
-<div class="card" onclick="playRadio('los40')">LOS40</div>
-<div class="card" onclick="playRadio('rpp')">RPP</div>
-<div class="card" onclick="playRadio('exitosa')">Exitosa</div>
+<div class="header">
+  <div class="title">🎧 URBAN FLOW</div>
+  <input class="search" placeholder="Buscar radios...">
 </div>
 
-<!-- YOUTUBE PLAYER -->
-<div class="logo" style="font-size:20px;">🎤 NORICK</div>
+<!-- DESTACADAS -->
+<div class="section">
+<h2>Radios Destacadas</h2>
 
-<div id="player"></div>
+<div class="cards" id="destacadas"></div>
+</div>
 
+<!-- POPULARES -->
+<div class="section">
+<h2>Populares</h2>
+
+<div class="list" id="lista"></div>
+</div>
+
+<!-- GENEROS -->
+<div class="section">
+<h2>Géneros</h2>
+
+<div class="genres">
+<div class="genre urbano">Urbano</div>
+<div class="genre pop">Pop</div>
+<div class="genre electro">Electrónica</div>
+<div class="genre rock">Rock</div>
+</div>
+
+</div>
+
+<!-- PLAYER -->
 <div class="player">
-
-<div id="title">Selecciona canción</div>
+<div id="title">Nada sonando</div>
 
 <div class="controls">
 <button onclick="prev()">⏮</button>
 <button onclick="toggle()">▶</button>
 <button onclick="next()">⏭</button>
 </div>
-
 </div>
 
 <audio id="audio"></audio>
 
-<script src="https://www.youtube.com/iframe_api"></script>
-
 <script>
 
-/* RADIOS */
-let audio=document.getElementById("audio");
-
-const radios={
-los40:"https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40.mp3",
-rpp:"https://playerservices.streamtheworld.com/api/livestream-redirect/RPP_SC",
-exitosa:"https://cu.onliv3.com/live/exitosa.mp3"
-};
-
-function playRadio(r){
- audio.src=radios[r];
- audio.play();
- document.getElementById("title").innerText="▶ "+r;
+/* RADIOS PRO */
+const radios=[
+{
+name:"LOS40",
+url:"https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40.mp3",
+img:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Los_40_Principales_logo.svg/512px-Los_40_Principales_logo.svg.png"
+},
+{
+name:"Urban Radio",
+url:"https://stream.zeno.fm/0r0xa792kwzuv",
+img:"https://i.imgur.com/8Km9tLL.png"
+},
+{
+name:"Dance Wave",
+url:"https://stream.zeno.fm/f3w2z7r7u8quv",
+img:"https://i.imgur.com/Qz1Z4.jpg"
+},
+{
+name:"Radio Internacional",
+url:"https://stream.zeno.fm/8m5r5w8rquzuv",
+img:"https://i.imgur.com/4Qy6.jpg"
+},
+{
+name:"Romantic Hits",
+url:"https://stream.zeno.fm/2y5p8n5qzquv",
+img:"https://i.imgur.com/jv7Y.jpg"
 }
-
-/* NORICK PLAYLIST (VIDEOS REALES) */
-const playlist=[
-"5pJY6Y9g9I0",
-"0KSOMA3QBU0",
-"fLexgOxsZu0",
-"3JZ4pnNtyxQ",
-"Zi_XLOBDo_Y",
-"2Vv-BfVoq4g",
-"ktvTqknDobU",
-"RgKAFK5djSk",
-"OPf0YbXqDm0",
-"09R8_2nJtjg"
 ];
 
-let player;
 let index=0;
 
-/* YOUTUBE INIT */
-function onYouTubeIframeAPIReady(){
- player=new YT.Player('player',{
-  height:'220',
-  width:'100%',
-  videoId:playlist[index],
-  playerVars:{'autoplay':0},
-  events:{
-    'onReady':()=>{}
-  }
- });
-}
+const audio=document.getElementById("audio");
+const title=document.getElementById("title");
 
-/* CONTROLES */
-function playYT(){
- player.playVideo();
-}
+/* DESTACADAS */
+const destacadas=document.getElementById("destacadas");
 
-function pauseYT(){
- player.pauseVideo();
+radios.forEach((r,i)=>{
+ let d=document.createElement("div");
+ d.className="card";
+ d.innerHTML=`<img src="${r.img}"><p>${r.name}</p>`;
+ d.onclick=()=>play(i);
+ destacadas.appendChild(d);
+});
+
+/* LISTA */
+const lista=document.getElementById("lista");
+
+radios.forEach((r,i)=>{
+ let d=document.createElement("div");
+ d.className="item";
+ d.innerHTML=`<img src="${r.img}"><div>${r.name}</div>`;
+ d.onclick=()=>play(i);
+ lista.appendChild(d);
+});
+
+/* PLAYER */
+function play(i){
+ index=i;
+ audio.src=radios[i].url;
+ audio.play();
+ title.innerText="▶ "+radios[i].name;
 }
 
 function toggle(){
- let state=player.getPlayerState();
- if(state==1){
-  player.pauseVideo();
- }else{
-  player.playVideo();
- }
+ audio.paused?audio.play():audio.pause();
 }
 
 function next(){
  index++;
- if(index>=playlist.length) index=0;
- player.loadVideoById(playlist[index]);
+ if(index>=radios.length) index=0;
+ play(index);
 }
 
 function prev(){
  index--;
- if(index<0) index=playlist.length-1;
- player.loadVideoById(playlist[index]);
+ if(index<0) index=radios.length-1;
+ play(index);
 }
 
 </script>

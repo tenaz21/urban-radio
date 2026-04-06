@@ -3,42 +3,86 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Urban Radio PRO</title>
+<title>Urban Flow</title>
 
 <style>
+:root{
+  --bg1:#020617;
+  --bg2:#0f172a;
+  --card:#1e293b;
+  --accent:#00f0ff;
+}
+
 body{
   margin:0;
-  font-family:sans-serif;
-  background:#0f172a;
+  font-family:'Segoe UI',sans-serif;
+  background:linear-gradient(180deg,var(--bg1),var(--bg2));
   color:white;
 }
 
-header{
+/* HEADER */
+.header{
   padding:15px;
-  text-align:center;
+}
+.title{
   font-size:22px;
   font-weight:bold;
 }
 
+/* SEARCH */
+.search{
+  width:100%;
+  padding:12px;
+  border-radius:25px;
+  border:none;
+  background:#1e293b;
+  color:white;
+  margin-top:10px;
+}
+
+/* GRID */
 .grid{
   display:grid;
   grid-template-columns:repeat(2,1fr);
-  gap:10px;
-  padding:10px;
+  gap:12px;
+  padding:15px;
+  padding-bottom:130px;
 }
 
 .card{
-  background:#1e293b;
-  border-radius:15px;
+  background:var(--card);
+  border-radius:18px;
   padding:10px;
-  text-align:center;
+  position:relative;
   cursor:pointer;
+  transition:.25s;
 }
 
 .card:hover{
-  background:#334155;
+  transform:scale(1.05);
+  box-shadow:0 0 15px var(--accent);
 }
 
+.card img{
+  width:100%;
+  height:100px;
+  border-radius:12px;
+}
+
+.name{
+  text-align:center;
+  margin-top:6px;
+}
+
+/* FAVORITO */
+.fav{
+  position:absolute;
+  top:5px;
+  right:8px;
+  font-size:18px;
+}
+
+/* PLAYER */
 .player{
   position:fixed;
   bottom:0;
@@ -46,105 +90,190 @@ header{
   background:#020617;
   padding:10px;
   display:flex;
-  justify-content:space-between;
   align-items:center;
+  gap:10px;
+  border-top:1px solid #1e293b;
 }
 
-button{
-  padding:10px;
-  border:none;
+.cover{
+  width:50px;
   border-radius:10px;
-  background:#22c55e;
-  color:white;
+}
+
+.meta{
+  flex:1;
+}
+
+.title2{
+  font-size:14px;
+}
+
+/* BARRAS ANIMADAS */
+.bars{
+  display:flex;
+  gap:2px;
+  height:12px;
+  margin-top:4px;
+}
+
+.bar{
+  width:3px;
+  background:var(--accent);
+  animation:beat .8s infinite;
+}
+
+@keyframes beat{
+  0%,100%{height:4px}
+  50%{height:12px}
+}
+
+.btn{
+  background:var(--accent);
+  border:none;
+  border-radius:50%;
+  width:45px;
+  height:45px;
+  font-size:16px;
 }
 </style>
 </head>
 
 <body>
 
-<header>🎧 Urban Radio PRO</header>
-
-<div class="grid">
-
-<div class="card" onclick="play('https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40.mp3')">
-<p>LOS40</p>
+<div class="header">
+  <div class="title">🎧 Urban Flow</div>
+  <input id="search" class="search" placeholder="Buscar radio...">
 </div>
 
-<div class="card" onclick="play('https://stream.0nlineradio.com/urban')">
-<p>Urban Radio</p>
-</div>
-
-<div class="card" onclick="play('https://dancewave.online/dance.mp3')">
-<p>Dance Wave</p>
-</div>
-
-<div class="card" onclick="play('https://streams.ilovemusic.de/iloveradio1.mp3')">
-<p>Radio Internacional</p>
-</div>
-
-<div class="card" onclick="play('https://stream.zeno.fm/0r0xa792kwzuv')">
-<p>Romantic Hits EU</p>
-</div>
-
-<div class="card" onclick="play('https://icecast.radiofrance.fr/fip-midfi.mp3')">
-<p>FIP Radio</p>
-</div>
-
-</div>
+<div class="grid" id="grid"></div>
 
 <div class="player">
-<span id="status">Selecciona radio</span>
-<button onclick="toggle()">▶️</button>
+  <img id="cover" class="cover" src="https://via.placeholder.com/50">
+  <div class="meta">
+    <div id="title" class="title2">Nada sonando</div>
+    <div class="bars" id="bars">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+  </div>
+  <button id="playBtn" class="btn">▶</button>
 </div>
 
 <audio id="audio"></audio>
 
 <script>
-let audio = document.getElementById("audio");
+const radios = [
+{nombre:"LOS40", url:"https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40.mp3"},
+{nombre:"Urban Radio", url:"https://stream.0nlineradio.com/urban"},
+{nombre:"Dance Wave", url:"https://dancewave.online/dance.mp3"},
+{nombre:"Radio Internacional", url:"https://streams.ilovemusic.de/iloveradio1.mp3"},
+{nombre:"Romantic Hits", url:"https://stream.zeno.fm/0r0xa792kwzuv"},
+{nombre:"FIP Radio", url:"https://icecast.radiofrance.fr/fip-midfi.mp3"}
+];
+
+let favoritos = JSON.parse(localStorage.getItem("fav")) || [];
+
+const grid = document.getElementById("grid");
+const audio = document.getElementById("audio");
+const title = document.getElementById("title");
+const cover = document.getElementById("cover");
+const playBtn = document.getElementById("playBtn");
+const bars = document.getElementById("bars");
+
 let currentUrl = "";
 let playing = false;
 
-/* ▶ REPRODUCIR */
-function play(url){
-  currentUrl = url;
+/* LOGO */
+function logo(n){
+  return "https://ui-avatars.com/api/?name="+encodeURIComponent(n)+"&background=0ea5e9&color=fff";
+}
 
-  audio.src = url;
+/* PLAY */
+function playRadio(r){
+  currentUrl = r.url;
+  audio.src = r.url;
   audio.load();
 
   audio.play().then(()=>{
-    document.getElementById("status").innerText = "Reproduciendo...";
+    title.textContent = r.nombre;
+    cover.src = logo(r.nombre);
     playing = true;
-  }).catch(()=>{
-    alert("Toca nuevamente para iniciar la radio");
   });
 }
 
-/* ▶ / ⏸ */
-function toggle(){
-  if(playing){
-    audio.pause();
-    playing = false;
-  } else {
-    audio.play();
-    playing = true;
-  }
-}
-
-/* 🔥 RECONEXIÓN AUTOMÁTICA */
+/* RECONEXIÓN */
 audio.addEventListener("error", reconnect);
 audio.addEventListener("stalled", reconnect);
-audio.addEventListener("ended", reconnect);
 
 function reconnect(){
   if(currentUrl){
-    console.log("Reconectando...");
     setTimeout(()=>{
       audio.src = currentUrl;
-      audio.load();
       audio.play();
     },2000);
   }
 }
+
+/* RENDER */
+function render(list){
+  grid.innerHTML="";
+
+  list.forEach(r=>{
+    const isFav = favoritos.includes(r.nombre);
+
+    const d=document.createElement("div");
+    d.className="card";
+
+    d.innerHTML=`
+      <span class="fav">${isFav?"❤️":"🤍"}</span>
+      <img src="${logo(r.nombre)}">
+      <div class="name">${r.nombre}</div>
+    `;
+
+    d.onclick=()=>playRadio(r);
+
+    d.querySelector(".fav").onclick=(e)=>{
+      e.stopPropagation();
+
+      if(isFav){
+        favoritos = favoritos.filter(f=>f!==r.nombre);
+      }else{
+        favoritos.push(r.nombre);
+      }
+
+      localStorage.setItem("fav",JSON.stringify(favoritos));
+      render(radios);
+    };
+
+    grid.appendChild(d);
+  });
+}
+
+/* BUSCAR */
+search.oninput=e=>{
+  const t=e.target.value.toLowerCase();
+  render(radios.filter(r=>r.nombre.toLowerCase().includes(t)));
+};
+
+/* PLAY BTN */
+playBtn.onclick=()=>{
+  if(playing){
+    audio.pause();
+    playing=false;
+    playBtn.textContent="▶";
+  }else{
+    audio.play();
+    playing=true;
+    playBtn.textContent="⏸";
+  }
+};
+
+audio.onplay=()=>playBtn.textContent="⏸";
+audio.onpause=()=>playBtn.textContent="▶";
+
+/* INIT */
+render(radios);
 </script>
 
 </body>

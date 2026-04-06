@@ -3,88 +3,68 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Urban Radio PRO</title>
 
 <style>
 body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(#121212, #000);
-    color: white;
+  margin: 0;
+  font-family: Arial;
+  background: linear-gradient(180deg, #121212, #000);
+  color: white;
 }
 
 header {
-    padding: 15px;
-    font-size: 22px;
-    font-weight: bold;
-    color: #1db954;
-}
-
-.search {
-    margin: 10px;
-    padding: 12px;
-    width: 90%;
-    border-radius: 30px;
-    border: none;
-    background: #1e1e1e;
-    color: white;
+  padding: 15px;
+  font-size: 22px;
+  font-weight: bold;
+  color: #1db954;
 }
 
 .grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    padding: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  padding: 15px;
 }
 
 .card {
-    background: #181818;
-    border-radius: 15px;
-    padding: 15px;
-    text-align: center;
-    transition: 0.3s;
-    cursor: pointer;
+  background: #181818;
+  border-radius: 20px;
+  padding: 20px;
+  text-align: center;
+  transition: 0.3s;
+  box-shadow: 0 0 15px rgba(0,0,0,0.5);
 }
 
 .card:hover {
-    transform: scale(1.05);
-    background: #1db954;
+  transform: scale(1.05);
+  background: #1db954;
 }
 
 .card img {
-    width: 90px;
-    border-radius: 12px;
+  width: 100px;
+  border-radius: 15px;
+  margin-bottom: 10px;
 }
 
 .player {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    background: #121212;
-    padding: 10px;
-    border-top: 1px solid #333;
-}
-
-.controls {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background: rgba(0,0,0,0.9);
+  backdrop-filter: blur(10px);
+  padding: 15px;
+  text-align: center;
 }
 
 button {
-    background: #1db954;
-    border: none;
-    padding: 12px;
-    border-radius: 50%;
-    color: white;
-    font-size: 18px;
-}
-
-#now {
-    text-align: center;
-    margin-bottom: 5px;
-    font-size: 14px;
-    color: #ccc;
+  background: #1db954;
+  border: none;
+  padding: 15px;
+  border-radius: 50%;
+  color: white;
+  font-size: 18px;
 }
 </style>
 </head>
@@ -92,8 +72,6 @@ button {
 <body>
 
 <header>🎧 Urban Radio PRO</header>
-
-<input class="search" placeholder="Buscar radios...">
 
 <div class="grid">
 
@@ -103,27 +81,27 @@ button {
 </div>
 
 <div class="card" onclick="playRadio('kiss')">
-<img src="https://i.imgur.com/VZ6F6Qx.png">
+<img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Kiss_FM_Logo.svg">
 <p>KISS FM</p>
 </div>
 
 <div class="card" onclick="playRadio('nrj')">
-<img src="https://i.imgur.com/6XbZQ6F.png">
+<img src="https://upload.wikimedia.org/wikipedia/commons/7/7a/NRJ_logo.svg">
 <p>NRJ</p>
 </div>
 
 <div class="card" onclick="playRadio('dance')">
-<img src="https://i.imgur.com/TKXb7YB.png">
+<img src="https://cdn-icons-png.flaticon.com/512/727/727245.png">
 <p>Dance Wave</p>
 </div>
 
 <div class="card" onclick="playRadio('romantic')">
-<img src="https://i.imgur.com/4Z7b6FQ.png">
+<img src="https://cdn-icons-png.flaticon.com/512/833/833472.png">
 <p>Romantic Hits</p>
 </div>
 
 <div class="card" onclick="playRadio('international')">
-<img src="https://i.imgur.com/YW6Xb3Q.png">
+<img src="https://cdn-icons-png.flaticon.com/512/484/484167.png">
 <p>Radio Internacional</p>
 </div>
 
@@ -131,10 +109,8 @@ button {
 
 <div class="player">
 <div id="now">Selecciona una radio</div>
-
-<div class="controls">
+<br>
 <button onclick="toggle()">⏯</button>
-</div>
 </div>
 
 <audio id="audio"></audio>
@@ -143,31 +119,24 @@ button {
 let audio = document.getElementById("audio");
 
 const radios = {
-    los40: "https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40.mp3",
-    kiss: "https://kissfm.kissfmradio.cires21.com/kissfm.mp3",
-    nrj: "https://scdn.nrjaudio.fm/adwz1/fr/30001/mp3_128.mp3",
-    dance: "https://stream.rcast.net/220602",
-    romantic: "https://streaming.radionomy.com/RomanticHits",
-    international: "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service"
+  los40: "https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40.mp3",
+  kiss: "https://kissfm.kissfmradio.cires21.com/kissfm.mp3",
+  nrj: "https://scdn.nrjaudio.fm/adwz1/fr/30001/mp3_128.mp3",
+  dance: "https://stream.rcast.net/220602",
+  romantic: "https://streaming.radionomy.com/RomanticHits",
+  international: "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service"
 };
 
-function playRadio(name) {
-    audio.src = radios[name];
-    audio.play();
-    document.getElementById("now").innerText = "Reproduciendo: " + name.toUpperCase();
+function playRadio(name){
+  audio.src = radios[name];
+  audio.play();
+  document.getElementById("now").innerText = "Reproduciendo: " + name.toUpperCase();
 }
 
-function toggle() {
-    if (audio.paused) audio.play();
-    else audio.pause();
+function toggle(){
+  if(audio.paused) audio.play();
+  else audio.pause();
 }
-
-// AUTO SWITCH PRO
-audio.onerror = function() {
-    document.getElementById("now").innerText = "⚠️ Cambiando radio automáticamente...";
-    audio.src = radios["nrj"];
-    audio.play();
-};
 </script>
 
 </body>

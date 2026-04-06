@@ -3,207 +3,270 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Urban Flow Perú</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Rubik+Mono+One&display=swap" rel="stylesheet">
+<title>URBAN FLOW RADIO</title>
 
 <style>
-body{
-  margin:0;
-  font-family:system-ui;
-  background:#0b0b0b;
-  color:white;
-  padding-bottom:120px;
+:root{
+  --bg1:#0b0b0b;
+  --bg2:#1a0000;
+  --accent:#00ff88;
 }
 
-.title{
-  text-align:center;
-  font-size:24px;
-  padding:15px;
-  background:linear-gradient(90deg,#ff0000,#ffd000,#00ff66);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+body{
+  margin:0;
+  font-family:Segoe UI, sans-serif;
+  background:linear-gradient(180deg,var(--bg1),var(--bg2));
+  color:#fff;
+}
+
+/* LOGO */
+.logo{
+  display:flex;
+  justify-content:center;
+  padding:10px;
+}
+.logo img{
+  width:90%;
+  max-width:420px;
+  border-radius:12px;
+  box-shadow:0 0 20px red;
+}
+
+/* BUSCADOR */
+.search{
+  width:85%;
+  margin:auto;
+  padding:12px;
+  border-radius:25px;
+  border:none;
+  display:block;
+}
+
+/* BOTONES */
+.topbar{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  margin:10px;
+}
+.topbar button{
+  padding:8px 14px;
+  border:none;
+  border-radius:20px;
+  background:#fff;
+  color:#000;
+  font-weight:bold;
 }
 
 /* GRID */
 .grid{
   display:grid;
   grid-template-columns:repeat(2,1fr);
-  gap:10px;
-  padding:10px;
+  gap:12px;
+  padding:15px;
+  padding-bottom:140px;
 }
 
-.card{
-  background:#181818;
-  padding:20px;
+.radio{
+  background:#111;
   border-radius:15px;
+  padding:12px;
   text-align:center;
-  font-family:'Rubik Mono One';
   cursor:pointer;
+  transition:.2s;
+  position:relative;
+}
+.radio:hover{transform:scale(1.05);}
+
+.radio img{
+  width:100%;
+  height:90px;
+  border-radius:10px;
 }
 
-/* GENEROS */
-.genres{
-  display:flex;
-  gap:10px;
-  overflow:auto;
-  padding:10px;
+.fav{
+  position:absolute;
+  top:6px;
+  right:8px;
+  font-size:18px;
 }
 
-.genre{
-  padding:10px 15px;
-  background:#181818;
-  border-radius:20px;
-  white-space:nowrap;
-}
-
-/* PLAYER */
+/* PLAYER PRO */
 .player{
   position:fixed;
   bottom:0;
   width:100%;
-  background:#111;
+  background:rgba(0,0,0,.95);
+  backdrop-filter:blur(10px);
   padding:10px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.player img{
+  width:50px;
+  border-radius:10px;
 }
 
 .controls{
   display:flex;
-  justify-content:center;
-  gap:20px;
+  gap:10px;
+  align-items:center;
 }
 
-button{
-  background:#00ff88;
+.btn{
+  background:var(--accent);
   border:none;
-  padding:12px;
   border-radius:50%;
-  font-size:18px;
+  padding:10px;
+  font-size:16px;
 }
 
-.active{
-  outline:2px solid #00ff88;
+.vol{width:80px}
+
+/* EQUALIZER */
+.eq{
+  display:flex;
+  gap:3px;
+}
+.bar{
+  width:3px;
+  height:10px;
+  background:lime;
+  animation:move 1s infinite;
+}
+@keyframes move{
+  0%,100%{height:5px}
+  50%{height:15px}
 }
 </style>
 </head>
 
 <body>
 
-<div class="title">🎧 URBAN FLOW PERÚ 🇵🇪</div>
-
-<!-- GENEROS -->
-<div class="genres">
-<div class="genre">Pop</div>
-<div class="genre">Urbano</div>
-<div class="genre">Electrónica</div>
-<div class="genre">Romántica</div>
+<div class="logo">
+  <img src="logo.png">
 </div>
 
-<!-- RADIOS -->
-<div class="grid" id="radios"></div>
+<input class="search" id="search" placeholder="Buscar radio...">
 
-<!-- PLAYLIST -->
-<div class="title">🎵 Playlist</div>
-<div class="grid" id="playlist"></div>
+<div class="topbar">
+  <button onclick="mostrarTodo()">Radios</button>
+  <button onclick="mostrarFav()">❤️ Favoritos</button>
+</div>
 
-<!-- PLAYER -->
+<div class="grid" id="grid"></div>
+
 <div class="player">
-<div id="titlePlayer">Nada sonando</div>
+  <img id="cover" src="https://via.placeholder.com/50">
+  
+  <div>
+    <div id="titulo">Nada sonando</div>
+    <div class="eq">
+      <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+    </div>
+  </div>
 
-<div class="controls">
-<button onclick="prev()">⏮</button>
-<button id="playBtn" onclick="toggle()">▶</button>
-<button onclick="next()">⏭</button>
-</div>
-</div>
+  <div class="controls">
+    <button class="btn" onclick="play()">▶</button>
+    <button class="btn" onclick="pause()">⏸</button>
+  </div>
 
-<audio id="audio"></audio>
+  <input type="range" id="vol" class="vol" min="0" max="1" step="0.01" value="1">
+
+  <audio id="audio"></audio>
+</div>
 
 <script>
 
-/* RADIOS (FUNCIONALES) */
-const radios=[
-{name:"LOS40",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40.mp3"},
-{name:"La Zona",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/LAZONA_SC"},
-{name:"Moda",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/MODA_SC"},
-{name:"Oxígeno",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/OXIGENO_SC"},
-{name:"Disney",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/DISNEY_SC"}
+/* 🔥 RADIOS ESTABLES */
+let radios=[
+{nombre:"Hip Hop Radio", url:"https://stream.0nlineradio.com/hip-hop"},
+{nombre:"Dance Wave", url:"https://dancewave.online/dance.mp3"},
+{nombre:"Radio Internacional", url:"https://streams.ilovemusic.de/iloveradio1.mp3"},
+{nombre:"Romantic Hits", url:"https://stream.zeno.fm/0r0xa792kwzuv"},
+{nombre:"LoFi Chill", url:"https://stream.zeno.fm/f3y6q8zq5wzuv"},
+{nombre:"Top 40 Mix", url:"https://stream.0nlineradio.com/top40"}
 ];
 
-/* PLAYLIST */
-const canciones=[
-{name:"Hip Hop Beat",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"},
-{name:"LoFi Chill",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"},
-{name:"Rap Flow",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"}
-];
+let favoritos=JSON.parse(localStorage.getItem("fav"))||[];
+let listaActual=[...radios];
 
-let lista=[...radios,...canciones];
-let index=0;
-
+const grid=document.getElementById("grid");
 const audio=document.getElementById("audio");
-const title=document.getElementById("titlePlayer");
-const playBtn=document.getElementById("playBtn");
+const titulo=document.getElementById("titulo");
+const cover=document.getElementById("cover");
 
-/* RENDER RADIOS */
-const rCont=document.getElementById("radios");
-
-radios.forEach((r,i)=>{
- let d=document.createElement("div");
- d.className="card";
- d.innerText=r.name;
- d.onclick=()=>play(i,d);
- rCont.appendChild(d);
-});
-
-/* RENDER PLAYLIST */
-const pCont=document.getElementById("playlist");
-
-canciones.forEach((c,i)=>{
- let d=document.createElement("div");
- d.className="card";
- d.innerText=c.name;
- d.onclick=()=>play(i+radios.length,d);
- pCont.appendChild(d);
-});
-
-/* PLAY */
-function play(i,el){
- index=i;
- audio.src=lista[i].url;
- audio.play();
- title.innerText=lista[i].name;
-
- document.querySelectorAll(".card").forEach(c=>c.classList.remove("active"));
- if(el) el.classList.add("active");
-
- playBtn.innerText="⏸";
+/* LOGO GENERADOR */
+function logo(n){
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(n)}&background=ff0000&color=fff`;
 }
 
-/* TOGGLE */
-function toggle(){
- if(audio.paused){
-  audio.play();
-  playBtn.innerText="⏸";
- }else{
-  audio.pause();
-  playBtn.innerText="▶";
- }
+/* RENDER */
+function render(lista){
+  grid.innerHTML="";
+  lista.forEach(r=>{
+    const fav=favoritos.includes(r.nombre);
+
+    const div=document.createElement("div");
+    div.className="radio";
+    div.innerHTML=`
+      <span class="fav">${fav?"❤️":"🤍"}</span>
+      <img src="${logo(r.nombre)}">
+      <p>${r.nombre}</p>
+    `;
+
+    div.onclick=()=>{
+      audio.src=r.url;
+      audio.play();
+      titulo.textContent=r.nombre;
+      cover.src=logo(r.nombre);
+    };
+
+    div.querySelector(".fav").onclick=(e)=>{
+      e.stopPropagation();
+      if(fav){
+        favoritos=favoritos.filter(f=>f!==r.nombre);
+      }else{
+        favoritos.push(r.nombre);
+      }
+      localStorage.setItem("fav",JSON.stringify(favoritos));
+      render(listaActual);
+    };
+
+    grid.appendChild(div);
+  });
 }
 
-/* NEXT / PREV */
-function next(){
- index=(index+1)%lista.length;
- play(index);
-}
-
-function prev(){
- index=(index-1+lista.length)%lista.length;
- play(index);
-}
-
-/* CUANDO TERMINA */
-audio.onended=()=>{
- next();
+/* BUSCAR */
+search.oninput=e=>{
+  const t=e.target.value.toLowerCase();
+  render(listaActual.filter(r=>r.nombre.toLowerCase().includes(t)));
 };
+
+/* VISTAS */
+function mostrarTodo(){
+  listaActual=[...radios];
+  render(listaActual);
+}
+function mostrarFav(){
+  listaActual=radios.filter(r=>favoritos.includes(r.nombre));
+  render(listaActual);
+}
+
+/* PLAYER */
+function play(){audio.play();}
+function pause(){audio.pause();}
+vol.oninput=()=>audio.volume=vol.value;
+
+/* ERROR HANDLER */
+audio.onerror=()=>{
+  alert("⚠️ Esta radio no funciona");
+};
+
+/* INIT */
+render(radios);
 
 </script>
 

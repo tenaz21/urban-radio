@@ -1,3 +1,3 @@
-self.addEventListener('install', e => {
-  console.log('Service Worker instalado');
+self.addEventListener("install", e => {
+  self.skipWaiting();
 });

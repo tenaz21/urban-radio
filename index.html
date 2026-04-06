@@ -5,35 +5,22 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Urban Flow Perú</title>
 
-<!-- Fuente estilo graffiti -->
 <link href="https://fonts.googleapis.com/css2?family=Rubik+Mono+One&display=swap" rel="stylesheet">
 
 <style>
-:root{
-  --bg:#0b0b0b;
-  --card:#181818;
-  --accent:#00ff88;
-  --text:#ffffff;
-}
-
-*{box-sizing:border-box}
 body{
   margin:0;
   font-family:system-ui;
-  background:var(--bg);
-  color:var(--text);
-  padding-bottom:110px; /* espacio para player */
+  background:#0b0b0b;
+  color:white;
+  padding-bottom:120px;
 }
 
-/* HEADER */
-.header{
-  padding:18px 14px 8px;
-}
 .title{
-  font-size:26px;
-  font-weight:900;
-  letter-spacing:1px;
-  background:linear-gradient(90deg,#ff0000,#ffd000,#00ff88,#00c3ff);
+  text-align:center;
+  font-size:24px;
+  padding:15px;
+  background:linear-gradient(90deg,#ff0000,#ffd000,#00ff66);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
 }
@@ -42,263 +29,182 @@ body{
 .grid{
   display:grid;
   grid-template-columns:repeat(2,1fr);
-  gap:12px;
-  padding:12px;
+  gap:10px;
+  padding:10px;
 }
 
-/* CARDS GRAFFITI */
 .card{
-  background:var(--card);
-  border-radius:16px;
-  padding:24px 10px;
+  background:#181818;
+  padding:20px;
+  border-radius:15px;
   text-align:center;
+  font-family:'Rubik Mono One';
   cursor:pointer;
-  position:relative;
-  transition:.2s;
-  overflow:hidden;
-}
-.card:hover{transform:scale(1.04)}
-.card.active{
-  outline:2px solid var(--accent);
-  box-shadow:0 0 20px rgba(0,255,136,.3);
-}
-.card span{
-  font-family:'Rubik Mono One', sans-serif;
-  font-size:14px;
-  line-height:1.2;
-  display:block;
-  text-transform:uppercase;
-  letter-spacing:1px;
-  text-shadow:
-    0 0 8px rgba(0,255,136,.5),
-    0 0 18px rgba(0,255,136,.2);
 }
 
-/* MINI PLAYER */
+/* GENEROS */
+.genres{
+  display:flex;
+  gap:10px;
+  overflow:auto;
+  padding:10px;
+}
+
+.genre{
+  padding:10px 15px;
+  background:#181818;
+  border-radius:20px;
+  white-space:nowrap;
+}
+
+/* PLAYER */
 .player{
   position:fixed;
   bottom:0;
-  left:0;
   width:100%;
-  height:70px;
   background:#111;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:10px 14px;
-  box-shadow:0 -3px 15px rgba(0,0,0,.6);
-  z-index:999;
-}
-.info{
-  display:flex;
-  flex-direction:column;
-  gap:3px;
-  max-width:55%;
-}
-.now{
-  font-size:12px;
-  color:#aaa;
-}
-.song{
-  font-size:14px;
-  font-weight:600;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  padding:10px;
 }
 
-/* CONTROLES */
 .controls{
   display:flex;
-  align-items:center;
-  gap:10px;
-}
-.btn{
-  background:#1f1f1f;
-  border:none;
-  color:white;
-  border-radius:50%;
-  width:36px;
-  height:36px;
-  display:flex;
-  align-items:center;
   justify-content:center;
-  font-size:16px;
+  gap:20px;
 }
-.play{
-  width:48px;
-  height:48px;
-  background:var(--accent);
-  color:black;
+
+button{
+  background:#00ff88;
+  border:none;
+  padding:12px;
+  border-radius:50%;
   font-size:18px;
-  box-shadow:0 0 15px rgba(0,255,136,.6);
 }
 
-/* BARRA PROGRESO */
-.progress{
-  position:absolute;
-  top:-3px;
-  left:0;
-  width:100%;
-  height:3px;
-  background:#333;
-}
-.progress div{
-  height:100%;
-  width:0%;
-  background:var(--accent);
-}
-
-/* PLAYER EXPANDIDO */
-.full{
-  position:fixed;
-  inset:0;
-  background:linear-gradient(#0b0b0b,#000);
-  z-index:1000;
-  display:none;
-  flex-direction:column;
-  padding:20px;
-}
-.full.show{display:flex}
-
-.full-title{
-  font-family:'Rubik Mono One', sans-serif;
-  font-size:22px;
-  text-align:center;
-  margin-top:40px;
-}
-
-.big-controls{
-  margin-top:auto;
-  margin-bottom:40px;
-  display:flex;
-  justify-content:center;
-  gap:25px;
-}
-.big-btn{
-  background:#1f1f1f;
-  border:none;
-  color:white;
-  border-radius:50%;
-  width:60px;
-  height:60px;
-  font-size:22px;
-}
-.big-play{
-  background:var(--accent);
-  color:black;
-  width:80px;
-  height:80px;
-  font-size:26px;
+.active{
+  outline:2px solid #00ff88;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">
-  <div class="title">URBAN FLOW PERÚ 🇵🇪</div>
+<div class="title">🎧 URBAN FLOW PERÚ 🇵🇪</div>
+
+<!-- GENEROS -->
+<div class="genres">
+<div class="genre">Pop</div>
+<div class="genre">Urbano</div>
+<div class="genre">Electrónica</div>
+<div class="genre">Romántica</div>
 </div>
 
-<div class="grid" id="grid"></div>
+<!-- RADIOS -->
+<div class="grid" id="radios"></div>
 
-<!-- MINI PLAYER -->
-<div class="player" onclick="openFull()">
-  <div class="progress"><div id="bar"></div></div>
+<!-- PLAYLIST -->
+<div class="title">🎵 Playlist</div>
+<div class="grid" id="playlist"></div>
 
-  <div class="info">
-    <div class="now">Reproduciendo</div>
-    <div id="title" class="song">Nada sonando</div>
-  </div>
+<!-- PLAYER -->
+<div class="player">
+<div id="titlePlayer">Nada sonando</div>
 
-  <div class="controls" onclick="event.stopPropagation()">
-    <button class="btn" onclick="prev()">⏮</button>
-    <button class="play" onclick="toggle()">▶</button>
-    <button class="btn" onclick="next()">⏭</button>
-  </div>
+<div class="controls">
+<button onclick="prev()">⏮</button>
+<button id="playBtn" onclick="toggle()">▶</button>
+<button onclick="next()">⏭</button>
 </div>
-
-<!-- PLAYER GRANDE -->
-<div class="full" id="full">
-  <div onclick="closeFull()">⬇️</div>
-  <div id="fullTitle" class="full-title">---</div>
-
-  <div class="big-controls">
-    <button class="big-btn" onclick="prev()">⏮</button>
-    <button class="big-play" onclick="toggle()">▶</button>
-    <button class="big-btn" onclick="next()">⏭</button>
-  </div>
 </div>
 
 <audio id="audio"></audio>
 
 <script>
+
+/* RADIOS (FUNCIONALES) */
 const radios=[
 {name:"LOS40",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40.mp3"},
-{name:"RPP",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/RPP_SC"},
-{name:"EXITOSA",url:"https://cu.onliv3.com/live/exitosa.mp3"},
-{name:"MODA",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/MODA_SC"},
-{name:"LA ZONA",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/LAZONA_SC"},
-{name:"OXIGENO",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/OXIGENO_SC"},
-{name:"PANAMERICANA",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/PANAMERICANA_SC"},
-{name:"CAPITAL",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/CAPITAL_SC"}
+{name:"La Zona",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/LAZONA_SC"},
+{name:"Moda",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/MODA_SC"},
+{name:"Oxígeno",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/OXIGENO_SC"},
+{name:"Disney",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/DISNEY_SC"}
 ];
 
-let index=0;
-const audio=document.getElementById("audio");
-const title=document.getElementById("title");
-const fullTitle=document.getElementById("fullTitle");
-const grid=document.getElementById("grid");
+/* PLAYLIST */
+const canciones=[
+{name:"Hip Hop Beat",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"},
+{name:"LoFi Chill",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"},
+{name:"Rap Flow",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"}
+];
 
-/* RENDER */
+let lista=[...radios,...canciones];
+let index=0;
+
+const audio=document.getElementById("audio");
+const title=document.getElementById("titlePlayer");
+const playBtn=document.getElementById("playBtn");
+
+/* RENDER RADIOS */
+const rCont=document.getElementById("radios");
+
 radios.forEach((r,i)=>{
-  let d=document.createElement("div");
-  d.className="card";
-  d.innerHTML=`<span>${r.name}</span>`;
-  d.onclick=()=>play(i,d);
-  grid.appendChild(d);
+ let d=document.createElement("div");
+ d.className="card";
+ d.innerText=r.name;
+ d.onclick=()=>play(i,d);
+ rCont.appendChild(d);
+});
+
+/* RENDER PLAYLIST */
+const pCont=document.getElementById("playlist");
+
+canciones.forEach((c,i)=>{
+ let d=document.createElement("div");
+ d.className="card";
+ d.innerText=c.name;
+ d.onclick=()=>play(i+radios.length,d);
+ pCont.appendChild(d);
 });
 
 /* PLAY */
 function play(i,el){
-  index=i;
-  audio.src=radios[i].url;
-  audio.play();
+ index=i;
+ audio.src=lista[i].url;
+ audio.play();
+ title.innerText=lista[i].name;
 
-  title.innerText=radios[i].name;
-  fullTitle.innerText=radios[i].name;
+ document.querySelectorAll(".card").forEach(c=>c.classList.remove("active"));
+ if(el) el.classList.add("active");
 
-  document.querySelectorAll(".card").forEach(c=>c.classList.remove("active"));
-  if(el) el.classList.add("active");
+ playBtn.innerText="⏸";
 }
 
-/* CONTROLES */
+/* TOGGLE */
 function toggle(){
-  audio.paused?audio.play():audio.pause();
+ if(audio.paused){
+  audio.play();
+  playBtn.innerText="⏸";
+ }else{
+  audio.pause();
+  playBtn.innerText="▶";
+ }
 }
+
+/* NEXT / PREV */
 function next(){
-  index=(index+1)%radios.length;
-  play(index);
+ index=(index+1)%lista.length;
+ play(index);
 }
+
 function prev(){
-  index=(index-1+radios.length)%radios.length;
-  play(index);
+ index=(index-1+lista.length)%lista.length;
+ play(index);
 }
 
-/* PROGRESO FAKE (para efecto visual en radios) */
-setInterval(()=>{
-  let bar=document.getElementById("bar");
-  let w=parseInt(bar.style.width)||0;
-  bar.style.width=((w+5)%100)+"%";
-},500);
+/* CUANDO TERMINA */
+audio.onended=()=>{
+ next();
+};
 
-/* EXPANDIR */
-function openFull(){
-  document.getElementById("full").classList.add("show");
-}
-function closeFull(){
-  document.getElementById("full").classList.remove("show");
-}
 </script>
 
 </body>

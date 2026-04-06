@@ -3,18 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Urban Flow</title>
-
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#020617">
+<title>Urban Flow GOD MODE</title>
 
 <style>
-:root{
-  --bg:#020617;
-  --card:#1e293b;
-  --accent:#22c55e;
-}
-
 body{
   margin:0;
   font-family:'Segoe UI',sans-serif;
@@ -37,9 +28,8 @@ body{
   padding:12px;
   border-radius:25px;
   border:none;
-  background:var(--card);
+  background:#1e293b;
   color:white;
-  margin-top:10px;
 }
 
 /* GRID */
@@ -52,24 +42,24 @@ body{
 }
 
 .card{
-  background:var(--card);
+  background:#1e293b;
   border-radius:18px;
-  padding:12px;
+  padding:10px;
   position:relative;
   cursor:pointer;
-  transition:.2s;
 }
 
-.card:hover{
-  transform:scale(1.05);
-  box-shadow:0 0 15px var(--accent);
+.card img{
+  width:100%;
+  border-radius:12px;
 }
 
 .name{
   text-align:center;
-  margin-top:6px;
+  margin-top:5px;
 }
 
+/* FAVORITO */
 .fav{
   position:absolute;
   top:5px;
@@ -86,20 +76,28 @@ body{
   display:flex;
   align-items:center;
   gap:10px;
-  border-top:1px solid #1e293b;
+}
+
+.cover{
+  width:50px;
+  border-radius:10px;
 }
 
 .meta{
   flex:1;
 }
 
+.song{
+  font-size:12px;
+  opacity:.7;
+}
+
 .btn{
-  background:var(--accent);
+  background:#22c55e;
   border:none;
   border-radius:50%;
   width:45px;
   height:45px;
-  font-size:16px;
 }
 </style>
 </head>
@@ -107,15 +105,17 @@ body{
 <body>
 
 <div class="header">
-  <div class="title">🎧 Urban Flow</div>
+  <div class="title">🎧 Urban Flow GOD</div>
   <input id="search" class="search" placeholder="Buscar radio...">
 </div>
 
 <div class="grid" id="grid"></div>
 
 <div class="player">
+  <img id="cover" class="cover" src="">
   <div class="meta">
     <div id="title">Nada sonando</div>
+    <div id="song" class="song">---</div>
   </div>
   <button id="playBtn" class="btn">▶</button>
 </div>
@@ -123,9 +123,12 @@ body{
 <audio id="audio"></audio>
 
 <script>
+
+/* 🎧 RADIOS CON LOGOS */
 const radios = [
 {
   nombre:"LOS40",
+  logo:"https://upload.wikimedia.org/wikipedia/commons/7/7a/Los40_logo.png",
   urls:[
     "https://live.amperwave.net/direct/prisaradio-los40",
     "https://streaming.radio.co/s97782a8e/listen"
@@ -133,18 +136,22 @@ const radios = [
 },
 {
   nombre:"Urban Radio",
+  logo:"https://cdn-icons-png.flaticon.com/512/727/727245.png",
   urls:["https://stream.0nlineradio.com/urban"]
 },
 {
   nombre:"Dance Wave",
+  logo:"https://cdn-icons-png.flaticon.com/512/3659/3659899.png",
   urls:["https://dancewave.online/dance.mp3"]
 },
 {
   nombre:"Radio Internacional",
+  logo:"https://cdn-icons-png.flaticon.com/512/727/727218.png",
   urls:["https://streams.ilovemusic.de/iloveradio1.mp3"]
 },
 {
   nombre:"Romantic Hits",
+  logo:"https://cdn-icons-png.flaticon.com/512/833/833472.png",
   urls:["https://stream.zeno.fm/0r0xa792kwzuv"]
 }
 ];
@@ -154,17 +161,19 @@ let favoritos = JSON.parse(localStorage.getItem("fav")) || [];
 const grid = document.getElementById("grid");
 const audio = document.getElementById("audio");
 const title = document.getElementById("title");
-const playBtn = document.getElementById("playBtn");
+const song = document.getElementById("song");
+const cover = document.getElementById("cover");
 
 let currentRadio = null;
 let currentIndex = 0;
-let playing = false;
 
 /* ▶ PLAY */
 function playRadio(r){
   currentRadio = r;
   currentIndex = 0;
   tryPlay();
+
+  cover.src = r.logo;
 }
 
 /* 🔄 AUTOSWITCH */
@@ -180,8 +189,8 @@ function tryPlay(){
   audio.load();
 
   audio.play().then(()=>{
-    title.textContent = "🎧 " + currentRadio.nombre;
-    playing = true;
+    title.textContent = currentRadio.nombre;
+    getMetadata();
   }).catch(()=>{
     next();
   });
@@ -196,18 +205,10 @@ function next(){
 audio.addEventListener("error", next);
 audio.addEventListener("stalled", next);
 
-/* PLAY BTN */
-playBtn.onclick=()=>{
-  if(playing){
-    audio.pause();
-    playing=false;
-    playBtn.textContent="▶";
-  }else{
-    audio.play();
-    playing=true;
-    playBtn.textContent="⏸";
-  }
-};
+/* 🎵 METADATA (SIMULADA) */
+function getMetadata(){
+  song.textContent = "🎵 En vivo...";
+}
 
 /* FAVORITOS */
 function toggleFav(nombre){
@@ -231,6 +232,7 @@ function render(list){
 
     d.innerHTML=`
       <span class="fav">${fav?"❤️":"🤍"}</span>
+      <img src="${r.logo}">
       <div class="name">${r.nombre}</div>
     `;
 
@@ -245,19 +247,14 @@ function render(list){
   });
 }
 
-/* BUSCADOR */
+/* BUSCAR */
 search.oninput=e=>{
   const t=e.target.value.toLowerCase();
   render(radios.filter(r=>r.nombre.toLowerCase().includes(t)));
 };
 
-/* INIT */
 render(radios);
 
-/* SERVICE WORKER */
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('service-worker.js');
-}
 </script>
 
 </body>

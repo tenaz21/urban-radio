@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Urban Radio Perú</title>
+
+<link rel="manifest" href="manifest.json">
 
 <style>
 body{
@@ -18,33 +19,52 @@ body{
 .logo{
   text-align:center;
   padding:20px;
-  font-size:32px;
+  font-size:30px;
   font-weight:bold;
-  background:linear-gradient(90deg,#ff0000,#ffd000,#00ff66);
+  background:linear-gradient(90deg,#ff0000,#ffd000,#00ff66,#00c3ff);
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
+}
+
+/* SEARCH */
+.search{
+  width:90%;
+  margin:auto;
+  display:block;
+  padding:10px;
+  border-radius:20px;
+  border:none;
+  background:#181818;
+  color:white;
 }
 
 /* GRID */
 .grid{
   display:grid;
   grid-template-columns:repeat(2,1fr);
-  gap:15px;
-  padding:15px;
+  gap:12px;
+  padding:12px;
+  padding-bottom:120px;
 }
 
-/* CARDS */
+/* CARD */
 .card{
   background:#181818;
-  padding:20px;
+  padding:15px;
   border-radius:15px;
   text-align:center;
-  transition:.3s;
+  position:relative;
 }
 
 .card:hover{
-  transform:scale(1.05);
   background:#ff0055;
+}
+
+/* FAVORITO */
+.fav{
+  position:absolute;
+  top:5px;
+  right:10px;
 }
 
 /* PLAYER */
@@ -53,90 +73,171 @@ body{
   bottom:0;
   width:100%;
   background:#111;
-  padding:15px;
-  text-align:center;
+  padding:10px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.cover{
+  width:50px;
+  border-radius:10px;
+}
+
+.info{
+  flex:1;
 }
 
 button{
   background:#00ff66;
   border:none;
-  padding:15px;
+  padding:10px;
   border-radius:50%;
-  font-size:20px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="logo">
-🎧 URBAN RADIO PERÚ 🇵🇪
-</div>
+<div class="logo">🎧 URBAN RADIO PERÚ 🇵🇪</div>
 
-<div class="grid">
+<input class="search" id="search" placeholder="Buscar radio...">
 
-<div class="card" onclick="play('los40')">LOS40</div>
-<div class="card" onclick="play('rpp')">RPP</div>
-<div class="card" onclick="play('exitosa')">Exitosa</div>
-<div class="card" onclick="play('oxigeno')">Oxígeno</div>
-<div class="card" onclick="play('felicidad')">La Inolvidable</div>
-<div class="card" onclick="play('planet')">Radio Planeta</div>
+<!-- RADIOS -->
+<div class="logo" style="font-size:20px;">📻 RADIOS</div>
+<div class="grid" id="grid"></div>
 
-<!-- INTERNACIONALES -->
-<div class="card" onclick="play('bbc')">BBC</div>
-<div class="card" onclick="play('kiss')">Kiss FM</div>
-<div class="card" onclick="play('nrj')">NRJ</div>
-<div class="card" onclick="play('dance')">Dance Wave</div>
+<!-- CANCIONES -->
+<div class="logo" style="font-size:20px;">🎵 CANCIONES</div>
+<div class="grid" id="songs"></div>
 
-</div>
-
+<!-- PLAYER -->
 <div class="player">
-<div id="status">Nada reproduciendo</div>
-<button onclick="toggle()">▶</button>
+<img id="cover" class="cover" src="https://via.placeholder.com/50">
+<div class="info">
+<div id="title">Nada sonando</div>
 </div>
-
+<button id="playBtn">▶</button>
 <audio id="audio"></audio>
+</div>
 
 <script>
-let audio=document.getElementById("audio");
 
-const radios={
+/* RADIOS ESTABLES */
+const radios=[
+{name:"LOS40",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40.mp3"},
+{name:"RPP",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/RPP_SC"},
+{name:"Exitosa",url:"https://cu.onliv3.com/live/exitosa.mp3"},
+{name:"Oxígeno",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/OXIGENO.mp3"},
+{name:"Planeta",url:"https://playerservices.streamtheworld.com/api/livestream-redirect/PLANETA.mp3"},
+{name:"BBC",url:"https://stream.live.vc.bbcmedia.co.uk/bbc_world_service"},
+{name:"NRJ",url:"https://scdn.nrjaudio.fm/adwz1/fr/30001/mp3_128.mp3"},
+{name:"KISS FM",url:"https://kissfm.kissfmradio.cires21.com/kissfm.mp3"}
+];
 
-los40:"https://playerservices.streamtheworld.com/api/livestream-redirect/LOS40.mp3",
+/* CANCIONES */
+const canciones=[
+{name:"Hip Hop Beat",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"},
+{name:"Chill Vibes",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"},
+{name:"Rap Instrumental",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"},
+{name:"LoFi Relax",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3"},
+{name:"Beat Flow",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3"},
+{name:"Urban Mood",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3"},
+{name:"Street Beat",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3"},
+{name:"Chill Night",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3"},
+{name:"Deep Flow",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3"},
+{name:"Trap Beat",url:"https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3"}
+];
 
-rpp:"https://playerservices.streamtheworld.com/api/livestream-redirect/RPP_SC",
+let favoritos=JSON.parse(localStorage.getItem("fav"))||[];
 
-exitosa:"https://cu.onliv3.com/live/exitosa.mp3",
+const grid=document.getElementById("grid");
+const songs=document.getElementById("songs");
+const audio=document.getElementById("audio");
+const title=document.getElementById("title");
+const cover=document.getElementById("cover");
+const playBtn=document.getElementById("playBtn");
 
-oxigeno:"https://playerservices.streamtheworld.com/api/livestream-redirect/OXIGENO.mp3",
+/* LOGO */
+function logo(n){
+ return "https://ui-avatars.com/api/?name="+encodeURIComponent(n)+"&background=ff0000&color=fff";
+}
 
-felicidad:"https://playerservices.streamtheworld.com/api/livestream-redirect/INOLVIDABLE.mp3",
+/* PLAY */
+function playItem(item){
+ audio.src=item.url;
+ audio.play();
+ title.textContent=item.name;
+ cover.src=logo(item.name);
+}
 
-planet:"https://playerservices.streamtheworld.com/api/livestream-redirect/PLANETA.mp3",
+/* RADIOS */
+function renderRadios(){
+ grid.innerHTML="";
+ radios.forEach(r=>{
+  const fav=favoritos.includes(r.name);
 
-bbc:"https://stream.live.vc.bbcmedia.co.uk/bbc_world_service",
+  const d=document.createElement("div");
+  d.className="card";
 
-kiss:"https://kissfm.kissfmradio.cires21.com/kissfm.mp3",
+  d.innerHTML=`
+   <span class="fav">${fav?"❤️":"🤍"}</span>
+   <p>${r.name}</p>
+  `;
 
-nrj:"https://scdn.nrjaudio.fm/adwz1/fr/30001/mp3_128.mp3",
+  d.onclick=()=>playItem(r);
 
-dance:"https://stream.rcast.net/220602"
+  d.querySelector(".fav").onclick=(e)=>{
+    e.stopPropagation();
+    if(fav){
+      favoritos=favoritos.filter(f=>f!==r.name);
+    }else{
+      favoritos.push(r.name);
+    }
+    localStorage.setItem("fav",JSON.stringify(favoritos));
+    renderRadios();
+  };
 
+  grid.appendChild(d);
+ });
+}
+
+/* CANCIONES */
+function renderSongs(){
+ songs.innerHTML="";
+ canciones.forEach(c=>{
+  const d=document.createElement("div");
+  d.className="card";
+
+  d.innerHTML=`<p>${c.name}</p>`;
+
+  d.onclick=()=>playItem(c);
+
+  songs.appendChild(d);
+ });
+}
+
+/* BUSCADOR */
+search.oninput=e=>{
+ const t=e.target.value.toLowerCase();
+ renderRadios(radios.filter(r=>r.name.toLowerCase().includes(t)));
 };
 
-function play(r){
- audio.src=radios[r];
- audio.play();
- document.getElementById("status").innerText="▶ "+r;
-}
-
-function toggle(){
+/* PLAY BTN */
+playBtn.onclick=()=>{
  audio.paused?audio.play():audio.pause();
-}
+};
 
-/* SI FALLA */
-audio.onerror=()=>{
- document.getElementById("status").innerText="❌ Radio no disponible";
+audio.onplay=()=>playBtn.textContent="⏸";
+audio.onpause=()=>playBtn.textContent="▶";
+
+/* INIT */
+renderRadios();
+renderSongs();
+
+/* PWA */
+if ('serviceWorker' in navigator) {
+ navigator.serviceWorker.register('sw.js');
 }
 </script>
 
